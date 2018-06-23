@@ -1,0 +1,44 @@
+{
+  "name": "balehuMerchant",
+  "version": "0.0.1",
+  "private": true,
+  "scripts": {
+    "start": "node node_modules/react-native/local-cli/cli.js start",
+    "test": "jest"
+  },
+  "dependencies": {
+    "@tele2/react-native-select-input": "^1.0.1",
+    "lodash": "^4.17.10",
+    "moment": "^2.22.2",
+    "react": "16.3.1",
+    "react-native": "0.55.4",
+    "react-native-camera": "1.0.0",
+    "react-native-check-box": "^2.1.0",
+    "react-native-checkbox": "^2.0.0",
+    "react-native-image-crop-picker": "git+https://github.com/jigaryadav/react-native-image-crop-picker.git",
+    "react-native-image-picker": "^0.26.10",
+    "react-native-maps": "0.19.0",
+    "react-native-material-dropdown": "^0.11.1",
+    "react-native-modal-datetime-picker": "^5.1.0",
+    "react-native-qrcode": "^0.2.6",
+    "react-native-richtext-editor": "git+https://github.com/hiteshagja/react-native-zss-rich-text-editor.git",
+    "react-native-simple-radio-button": "^2.7.1",
+    "react-native-svg": "5.5.1",
+    "react-native-swiper": "^1.5.13",
+    "react-native-tab-view": "0.0.78",
+    "react-native-webview-bridge": "^0.33.0",
+    "react-native-zss-rich-text-editor": "^1.1.0",
+    "react-navigation": "^2.0.1",
+    "styled-components": "^3.2.6",
+    "victory-native": "^0.18.1"
+  },
+  "devDependencies": {
+    "babel-jest": "23.0.1",
+    "babel-preset-react-native": "4.0.0",
+    "jest": "23.1.0",
+    "react-test-renderer": "16.3.1"
+  },
+  "jest": {
+    "preset": "react-native"
+  }
+}
