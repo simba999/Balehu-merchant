@@ -31,8 +31,8 @@ import DateTimePicker from 'react-native-modal-datetime-picker';
 import moment from 'moment';
 
 let radio_props = [
-  { label: "Balehu Coin", value: 0 },
-  { label: "Balehu Promotion", value: 1 }
+  { label: "Balehu Coin", value: 0 }
+  // { label: "Balehu Promotion", value: 1 }
 ];
 
 let pause_props = [
@@ -417,6 +417,7 @@ class PromotionScreen extends React.Component {
                       {radio_props.map((obj, i) => {
                         return (
                           <RadioButton key={i} style={{padding:this.state.selectedOptionOffer == 0 ? 8 : 2}} >
+                            {/*
                             <RadioButtonInput
                               obj={obj}
                               index={i}
@@ -428,6 +429,7 @@ class PromotionScreen extends React.Component {
                               buttonOuterSize={15}
                               buttonStyle={{ borderWidth: 1 }}
                               />
+                            */}
                             <RadioButtonLabel
                               obj={obj}
                               index={i}
@@ -445,28 +447,29 @@ class PromotionScreen extends React.Component {
                     </RadioForm>
                   </RadioContainer>
                   <InputContainer>
-                    {
-                      this.state.selectedOptionOffer == 0 ?
+                    {/*
+                      this.state.selectedOptionOffer == 0 ? */}
                       <BitTextInput
                         onChangeText={(text) => this.setState({text})}
                         value={this.state.text}
                         placeholder="Coin amount"
                         placeholderTextColor={Theme.colors.warmGrey}
                         underlineColorAndroid="transparent"
-                        />: null}
-                      </InputContainer>
-                    </Container>
-                    {
-                      this.state.selectedOptionOffer == 1 ?
-                      <BitTextInput
-                        onChangeText={(text) => this.setState({text})}
-                        value={this.state.text}
-                        placeholder="Enter Promotion"
-                        placeholderTextColor={Theme.colors.warmGrey}
-                        underlineColorAndroid="transparent"
                         />
-                      : null}
-                    </CommonContainer>
+                      {/*: null */}
+                  </InputContainer>
+                </Container>
+                {
+                  this.state.selectedOptionOffer == 1 ?
+                    <BitTextInput
+                      onChangeText={(text) => this.setState({text})}
+                      value={this.state.text}
+                      placeholder="Enter Promotion"
+                      placeholderTextColor={Theme.colors.warmGrey}
+                      underlineColorAndroid="transparent"
+                      />
+                    : null}
+              </CommonContainer>
                   </PromotionContainer>
 
                   <MarketPlaceContainer>

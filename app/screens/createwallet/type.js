@@ -1,0 +1,1 @@
+export const CREATE_WALLET_KEY = 'CREATE_WALLET_KEY';

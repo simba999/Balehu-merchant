@@ -16,7 +16,7 @@ import { MainContainer,
   ButtonContainer,IconContainer } from "./style";
   import CustomIcon from '../icon/svgicon'
   import Card from '../../components/giftCardPopup/giftCard';
-  import SendCoin from '../../screens/coin/sendCoin';
+  import SendCoinPage from '../../screens/coin/sendCoin';
   import CoinScreen from '../../screens/coin/CoinScreen';
   import TransactionHistory from '../../screens/history/TranscationHistory.js';
   import QrCodeScan from '../qrCodeScan/qrCode';

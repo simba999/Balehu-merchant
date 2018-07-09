@@ -116,12 +116,12 @@ class Marketing extends React.Component {
                 </IconContainer>
                 <ScrollView>
                   <Card title={this.state.modalName}>
-                    {
+                    {/*
                       this.state.modalName=='Loyalty Reward'?
                       <LoyaltyReward  setModalVisible={this.setModalVisible}/>
                       :
                       null
-                    }
+                    */}
                   </Card>
                 </ScrollView>
               </View>

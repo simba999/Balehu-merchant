@@ -10,10 +10,16 @@ import Theme from '../../../theme';
 import { MainContainer, SubContainer, ButtonContainer, LabelContainer, LabelText} from './style';
 import TextInput from '../../components/textfield/CustomTextField';
 import CustomButton from '../../components/button/CustomButton';
+import { SendCoin } from '../../EthereumLib/utils';
 
-class SendCoin extends React.Component {
+class SendCoinPage extends React.Component {
     constructor(){
       super();
+
+      this.state = {
+        amount: 0,
+        memo: ''
+      }
     }
     static navigationOptions = {
       headerVisible:false,
@@ -23,7 +29,12 @@ class SendCoin extends React.Component {
       },
     }
 
+    _sendcoin() {
+      console.log(this.state)
+    }
+
     render(){
+      console.log(this.state)
       return(
         <MainContainer>
           <LabelText primary text>To</LabelText>
@@ -40,19 +51,23 @@ class SendCoin extends React.Component {
             </LabelContainer>
             <TextInput
               label={"Amount"}
+              value={this.state.amount}
+              onChange={(e) => this.setState({amount: e})}
               width={260}
               placeholder="0.00 USD"/>
           </SubContainer>
           <SubContainer>
             <TextInput
               label={"Memo"}
+              value={this.state.memo}
+              onChange={(e) => this.setState({memo: e})}
               width={260}
               placeholder="Add note"  />
           </SubContainer>
           <ButtonContainer>
             <CustomButton
               onPress={()=>{
-                this.props.setModalVisible(true,'Transfer Notification');
+                this._sendcoin()
               }}
               fill={Theme.colors.green}
               width={260}
@@ -62,4 +77,4 @@ class SendCoin extends React.Component {
       );
     }
   }
-export default SendCoin
+export default SendCoinPage
