@@ -104,9 +104,12 @@ class BusinessInformation extends React.Component {
         'category-id': this.state.categoryVal
       };
 
-      createNewBusiness(this.props.userToken.token, data).then(async (res) => {
+      createNewBusiness(this.props.userToken.token, data).then((res) => {
         if (typeof(res.code) == "undefined") {
-          let tmpData = createWallet(self.props.userInfo.password, self.props.userToken.token, '0x8e867f1d7176482ecd2730b3a465e6b7cd128aec')
+          await createWallet(self.props.userInfo.password, self.props.userToken.token).then((res) => {
+            console.log(':::',res)
+          })
+          
           self.props.setModalVisible(true,'Create Wallet');
         } else {
           self.setState({ errMsg: res.message })

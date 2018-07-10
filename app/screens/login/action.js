@@ -24,34 +24,37 @@ export function login (data) {
         if(r.code == 200){
           let token = r.token;
 
-          signIn(token, data).then((r,e)=>{
-            if(r.code==200){
-              let tokenData = {
-                token:r.token,
-                expire:r.expire,
-                balehuAppToken:token
-              }
-              saveUserData(tokenData).then((r,e)=>{
-                dispatch({
-                  type: SAVE_USER_TOKEN,
-                  data: tokenData
+          return new Promise((resolve, reject) => {
+            signIn(token, data).then((r,e)=>{
+              if(r.code==200){
+                let tokenData = {
+                  token:r.token,
+                  expire:r.expire,
+                  balehuAppToken:token
+                }
+                saveUserData(tokenData).then((r,e)=>{
+                  dispatch({
+                    type: SAVE_USER_TOKEN,
+                    data: tokenData
+                  })
+
+                  resolve({'code': 200})
+                  // const navigateAction = StackActions.reset({
+                  //           index:0,
+                  //           actions: [NavigationActions.navigate({ routeName: 'Main' })],
+                  //         })
+                  //   dispatch(navigateAction);
                 })
-                return {'code': 200}
-                // const navigateAction = StackActions.reset({
-                //           index:0,
-                //           actions: [NavigationActions.navigate({ routeName: 'Main' })],
-                //         })
-                //   dispatch(navigateAction);
-              })
-            }else{
-              alert(r.message)
-              dispatch({
-                type: ERROR_LOGIN,
-                data: {message:r.message}
-              })
-              return {'code': 500, message: r.message}
-            }
+              }else{
+                dispatch({
+                  type: ERROR_LOGIN,
+                  data: {message:r.message}
+                })
+                resolve({'code': 500, message: r.message})
+              }
+            })
           })
+         
         }
       }
     })

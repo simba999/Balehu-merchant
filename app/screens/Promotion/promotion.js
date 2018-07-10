@@ -30,6 +30,10 @@ import DateRange from './TimeRange'
 import DateTimePicker from 'react-native-modal-datetime-picker';
 import moment from 'moment';
 
+import { createPromotion } from './action'
+import { connect } from "react-redux";
+import { bindActionCreators } from "redux";
+
 let radio_props = [
   { label: "Balehu Coin", value: 0 }
   // { label: "Balehu Promotion", value: 1 }
@@ -83,7 +87,10 @@ class PromotionScreen extends React.Component {
       saveValue:false,
       imagePath:'',
     };
+
+    this._savePromotion = this._savePromotion.bind(this);
   }
+
   componentWillMount() {
 
     if(this.props.navigation.state.params){
@@ -251,6 +258,35 @@ class PromotionScreen extends React.Component {
   }
   setModalVisible = (visible,modal) => {
     this.setState({modalVisible: visible,modalName:modal});
+  }
+
+  _savePromotion() {
+    console.log('before save: ', this.props.business)
+    const data = {
+      "b64-image": this.state.imagePath,
+      "business-id": '',
+      "business-locaiton": selectedOptionLocation === 0 ? true : false,
+      "category-id": this.props.business['category-id'],
+      details: this.state.text,
+      headline: this.state.headLine,
+      latitude: this.state.latitude,
+      longitude: this.state.longitude,
+      "micro-coin-offered": 50000000,
+      "offer-type-id": this.state.selectedOptionOffer,
+      "pause-date":'',
+      "postal-code": '',
+      "promotion-id": '',
+      "promotion-value": '',
+      "restricted-content": false,
+      "state-or-province": '',
+      street: '',
+      "unique-code": '',
+      "usage-limit": 1000
+    }
+
+    console.log(this.state, data)
+
+    this.props.navigation.goBack(null);
   }
 
   render () {
@@ -600,7 +636,7 @@ class PromotionScreen extends React.Component {
                       <ButtonContainer>
                         <CustomButton
                           onPress={() => {
-                            this.props.navigation.goBack(null);
+                            this._savePromotion()
                           }}
                           fill={Theme.colors.lightBlue}
                           width="310"
@@ -642,4 +678,18 @@ class PromotionScreen extends React.Component {
               }
             }
 
-            export default PromotionScreen;
+function mapDispatchToProps(dispatch) {
+  return Object.assign(
+    { dispatch: dispatch },
+    bindActionCreators({createPromotion}, dispatch)
+  );
+}
+
+const mapStateToProps = state => {
+  let signUpReducer = state.signUpReducer
+  return {
+    error : signUpReducer.error
+  };
+};
+
+export default connect(mapStateToProps, mapDispatchToProps)(PromotionScreen);

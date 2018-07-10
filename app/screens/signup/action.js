@@ -32,7 +32,7 @@ export function userSignUp (data) {
                   balehuAppToken:token
                 }
                 
-                saveUserData(tokenData, tdata).then((r,e)=>{
+                saveUserData(tokenData).then((r,e)=>{
                   dispatch({
                     type: SAVE_USER_TOKEN,
                     data: tokenData,
@@ -47,7 +47,6 @@ export function userSignUp (data) {
                   //   dispatch(navigateAction);
                 })
               }else{
-                alert(r.message)
                 dispatch({
                   type: ERROR_SIGNUP,
                   data: {message:r.message}

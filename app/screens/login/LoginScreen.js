@@ -51,13 +51,13 @@ class LoginScreen extends React.Component {
     if (this.state.username != '' && this.state.password != '') {
       this.props.login(this.state).then((res) => {
         if (res.code === 200) {
-          this.props.setModalVisible(false);
-          this.props.navigation.navigate('Main');
+          self.props.setModalVisible(false);
+          self.props.navigation.navigate('Main');
         } else {
           alert(res.message)
         }
       })
-      NavigationActions.navigate({ routeName: 'Main' })
+      // NavigationActions.navigate({ routeName: 'Main' })
     } else {
       this.setState({ errMsg: 'Input Field must be filled' })
     }

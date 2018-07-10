@@ -1,5 +1,5 @@
 import createReducer from '../lib/createReducer'
-import * as types from '../actions/types'
+import * as types from '../lib/constants'
 
 var initialstate = {
   data:0,
@@ -7,7 +7,8 @@ var initialstate = {
   userToken:null,
   promotionFlag:false,
   userinfo:{},
-  walletKey: ''
+  walletKey: '',
+  promotion: []
 }
 
 export const commonReducer = createReducer(initialstate, {
@@ -40,9 +41,18 @@ export const commonReducer = createReducer(initialstate, {
       promotionFlag:action.data
     })
   },
-  [types.CREATE_KEY](state, action){
+  [types.CREATE_WALLET_KEY](state, action){
     return Object.assign({}, state, {
       walletKey:action.data
     })
+  },
+  [types.CREATE_PROMOTION_ACTION](state, action){
+    let promotion = initialstate.promotion;
+    promotion.push(action.data);
+
+    return Object.assign({}, state, {
+      promotion:promotion
+    })
   }
+
 })

@@ -73,7 +73,7 @@ class SignupScreen extends React.Component {
             this.props.userSignUp(params).then((res) => {
               console.log(res)
               if (res.code === 200) {
-                this.props.setModalVisible(true, 'Business Information');
+                self.props.setModalVisible(true, 'Business Information');
               } else {
                 alert(res.message);
               }

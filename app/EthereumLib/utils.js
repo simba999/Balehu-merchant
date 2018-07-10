@@ -60,7 +60,7 @@ try{
 var address=getLocalAddress()
 var encoded=abi.simpleEncode("transfer(address,uint256):(bool)",address,amount)
 encoded="0x"+encoded.toString('hex')
-var pk=GetPrivateKey(password)
+var pk=await GetPrivateKey(password)
 var nonce=await getNonce(from,token)
 
 var TX1=CreateTX(nonce,'0x4a817c800' ,100000 ,0,BalehuAddress,encoded,pk,false)
@@ -74,7 +74,7 @@ async function SeedAddress(token,address,amount){
 var SeedContract='0x5e8345710611F0282d8a2Bb420a5f5BDE348613b';
 var encoded=abi.simpleEncode("SendEther(address,uint256)",address,amount)
 encoded="0x"+encoded.toString('hex')
-var sender="0x1641bF2b9C583f62600bB94b256f41E3b63A6CdC"
+var sender='0x1641bF2b9C583f62600bB94b256f41E3b63A6CdC'
 var pk="2cace03ff63f12fe15862d0b3b7f1000aabf41d472107051fb5c2d0fd09f1bcd"
 var nonce=await getNonce(sender,token)
 
@@ -116,7 +116,7 @@ return result
 export  async function localDeposit(from,amount,token,nonce,password,BalehuAddress){
   try{
 	var encoded="0x"+abi.simpleEncode("localDeposit(uint)",amount);
-	var pk=GetPrivateKey(password)
+	var pk=await GetPrivateKey(password)
 	var nonce=getNonce(from,token)
 	var TX=CreateTX(nonce,'0x4a817c800' ,100000 ,0,BalehuAddress,encoded,pk,false)
 	var result= await SendRawTransaction(TX,token)
@@ -128,7 +128,7 @@ export  async function localDeposit(from,amount,token,nonce,password,BalehuAddre
 export async function localwithDraw(from,amount,token,nonce,password,BalehuAddress){
   try{
 	var encoded="0x"+abi.simpleEncode("localWithDraw(uint)",amount);
-	var pk=GetPrivateKey(password)
+	var pk=await GetPrivateKey(password)
 	var nonce=await getNonce(from,token)
 	var TX=CreateTX(nonce,'0x4a817c800' ,100000 ,0,BalehuAddress,encoded,pk,false)
 	var result=await SendRawTransaction(TX,token)
@@ -146,7 +146,7 @@ export async function CreateTokenCoupon(from,amount,token,value,totalvalue,Baleh
 	var encoded3="0x"+abi.simpleEncode("RegisterPromotion(uint256,uint256)",value,totalvalue)
 	var nonce=await getNonce(from,token)
 	var nonce2=nonce+1;
-	var pk=GetPrivateKey(password)
+	var pk=await GetPrivateKey(password)
 	var TX=CreateTX(nonce,'0x4a817c800' ,100000 ,0,BalehuAddress,encoded2,pk,false)
 	var result=await SendRawTransaction(TX,token)
 	var TX1=CreateTX(nonce2,'0x4a817c800' ,200000 ,0,PromotionAddresss,encoded3,pk,false)
@@ -162,7 +162,7 @@ export async function MerchantCouponSign(token,password,customeraddress,promotio
 	var id= await getCustomerCouponID(token,customeraddress)
 	var HashToSign= Sha3(MerchantHash,customeraddress,value,id)
 	var TXinstance= new TX(null,1)
-	var pk=GetPrivateKey(password)
+	var pk=await GetPrivateKey(password)
 	var sig=TXinstance.Simplesign(HashtoSign,pk)
 	var r="0x"+sig.r.toString('hex')
   var s="0x"+sig.s.toString('hex')
@@ -208,7 +208,7 @@ var to=data.slice(202,244)
 var Merchant=data.slice(244,286)
 var id=data.slice(286,290)
 var encoded="0x"+abi.simpleEncode("RPromotion(bytes32,uint8,bytes32 ,bytes32 ,address ,address,uint)",Hash,v,r,s,to,Merchant,id);
-var pk=GetPrivateKey(password)
+var pk=await GetPrivateKey(password)
 var nonce=await getNonce(address,token)
 var TX=CreateTX(nonce,'0x4a817c800' ,200000 ,0,PromotionAddress,encoded,pk,false)
 var result= await SendRawTransaction(TX,token);
@@ -233,7 +233,7 @@ export async function BuyMerchantCashFor(amount,BusinessAddress,token,BalehuAddr
 	var channelAddress=walletarray[1].wallet-address;
 	}
 	var encoded=abi.simpleEncode("SendOffChain(uint,address,address)",amount,channelAddress,BusinessAddress)
-	var pk=GetPrivateKey(password)
+	var pk=await GetPrivateKey(password)
 	var nonce=await getNonce(from,token)
 	var TX=CreateTX(nonce,'0x4a817c800' ,200000 ,0,BalehuAddress,encoded,pk,false)
 	var result= await SendRawTransaction(TX,token);
@@ -258,7 +258,7 @@ export async function BuyMerchantCash(amount,BusinessAddress,token,BalehuAddress
 	var channelAddress=walletarray[1].wallet-address;
 	}
 	var encoded=abi.simpleEncode("SendOffChain(uint,address,address)",amount,channelAddress,BusinessAddress)
-	var pk=GetPrivateKey(password)
+	var pk=await GetPrivateKey(password)
 	var nonce=await getNonce(from,token)
 	var TX=CreateTX(nonce,'0x4a817c800' ,200000 ,0,BalehuAddress,encoded,pk,false)
 	var result= await SendRawTransaction(TX,token);
@@ -273,7 +273,7 @@ export async function BuyGiftCardFor(token,amount,MerchantAddress,RecipientAddre
   var encoded= "0x"+abi.simpleEncode("Deposit(uint256, address,address)",amount,RecipientAddress,MerchantAddress)
   var nonce=await getNonce(address,token)
   nonce2=nonce+1;
-  var pk=GetPrivateKey(password)
+  var pk=await GetPrivateKey(password)
   var TX=CreateTX(nonce,'0x4a817c800' ,200000 ,0,BalehuAddress,encoded,pk,false)
 	var result= await SendRawTransaction(TX,token);
   var success=VerifyTransaction(token,result);
@@ -293,7 +293,7 @@ export async function UserRedeemGiftCard(token,MerchantCashAddress,MerchantAddre
   try{
    var encoded= "0x"+abi.simpleEncode("Spend(uint256,address)",amount,MerchantAddress)
    var nonce=await getNonce(address,token)
-   var pk=GetPrivateKey(password)
+   var pk=await GetPrivateKey(password)
    var TX=CreateTX(nonce,'0x4a817c800' ,200000 ,0,MerchantCashAddress,encoded,pk,false)
   var result= await SendRawTransaction(TX,token);
   var success=VerifyTransaction(token,result);
@@ -326,7 +326,7 @@ export async function UserRedeemMerchantCash(address,amount,Merchant,token,Busin
 	var MerchantHash=await Call(token,encoded,walletAddress,from)
 	var HashToSign= await SoliditySha3(token,Merchant,MerchantHash,amount)
     var TXinstance= new TX(null,1)
-	var pk=GetPrivateKey(password)
+	var pk=await GetPrivateKey(password)
 	var signature=TXinstance.Simplesign(HashtoSign,pk)
 	var r="0x"+signature.r.toString('hex');
 	var s="0x"+signature.s.toString('hex');
@@ -347,7 +347,7 @@ export async function CloseChannel(from,token,v,r,s,amount,Merchant,channelAddre
 	var HashToSign=await SoliditySha31(token,Merchant,MerchantHash,amount)
 
 	var encoded3=abi.simpleEncode("CloseChannel(bytes32,uint8,bytes32,bytes32,uint256,uint256)",HashToSign,v,r,s,amount,MerchantNumber);
-	var pk=GetPrivateKey(password)
+	var pk=await GetPrivateKey(password)
 	var nonce=await getNonce(from,token)
 	var nonce2=nonce+1
 	var TXX= new TX(null,1)
@@ -427,9 +427,9 @@ function StoreKey(password,item){
 
 export function GetPrivateKey(password){
 
-    RNSecureKeyStore.get(password)
+    return RNSecureKeyStore.get(password)
         .then((res) => {
-            alert(res);
+            //alert(res);
             return res
         }, (err) => {
             console.log(err);
@@ -902,7 +902,7 @@ export  async  function createWallet(password,token){
      const priv=w.getPrivateKeyString();
 
      const pub=w.getPublicKeyString();
-     const address=w.getAddress();
+     const address=w.getAddressString();
      await StoreKey(password,priv)
      var nonce=0
 
