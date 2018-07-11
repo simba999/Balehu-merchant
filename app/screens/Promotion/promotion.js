@@ -30,9 +30,9 @@ import DateRange from './TimeRange'
 import DateTimePicker from 'react-native-modal-datetime-picker';
 import moment from 'moment';
 
-import { createPromotion } from './action'
 import { connect } from "react-redux";
 import { bindActionCreators } from "redux";
+import { createPromotion } from './action';
 
 let radio_props = [
   { label: "Balehu Coin", value: 0 }
@@ -86,6 +86,9 @@ class PromotionScreen extends React.Component {
       longitude:'',
       saveValue:false,
       imagePath:'',
+      allDay: false,
+      selectedTimeType: 0,
+      discoverableDay: []
     };
 
     this._savePromotion = this._savePromotion.bind(this);
@@ -118,16 +121,26 @@ class PromotionScreen extends React.Component {
   hideCalendar = () => this.setState({ openCalendar: false });
 
   selectedDays = (value,index) => {
+    let allDay = false
+
     if (value === 'pick hours')
     {
       this.setModalVisible(true,'Pick Hours')
     }
 
+    if (value === 'All Day')
+    {
+      allDay = true
+    }
+
     this.setState({
       saveValue:true,
       selectedTime: value,
+      selectedTimeType: index,
+      allDay: allDay
     });
   }
+
   ChangeDate  = (date) => {
     this.setState({selectedDate: date})
     this.hideCalendar();
@@ -196,16 +209,20 @@ class PromotionScreen extends React.Component {
   }
 
   handleDay = e => {
+    let discoverableDay = Object.assign([], this.state.discoverableDay);
+
     if(e.id<=4){
       let date = this.state.date;
       for (var i = 0; i <= date.length; i++) {
         if(date[i].id == e.id){
           date[i].selected = !e.selected;
+          discoverableDay.push(e.id);
           break;
         }
       }
       this.setState({
         date:date,
+        discoverableDay: discoverableDay,
         saveValue:true
       });
     }else{
@@ -213,11 +230,13 @@ class PromotionScreen extends React.Component {
       for (var i = 0; i <= date.length; i++) {
         if(date[i].id == e.id){
           date[i].selected = !e.selected;
+          discoverableDay.push(e.id);
           break;
         }
       }
       this.setState({
         date2:date,
+        discoverableDay: discoverableDay, 
         saveValue:true
 
       });
@@ -261,32 +280,72 @@ class PromotionScreen extends React.Component {
   }
 
   _savePromotion() {
-    console.log('before save: ', this.props.business)
+    const self = this;
+    
+    let days = [{
+        value: 'All Day',id:0,
+      }, {
+        value: 'mornings until 2pm',
+        startTime: '00:00 AM',
+        endTime: '02:00 PM'
+      }, {
+        value: 'afternoon/evening12-30pm',
+        startTime: '00:00 PM',
+        endTime: '12:30 PM'
+      },{
+        value:'after 7pm ',
+        startTime: '07:00 PM',
+        endTime: '00:00 AM'
+      },
+      ,{
+        value:'pick hours'
+      }
+    ];
+
+    let startTime = '';
+    let endTime = '';
+
+    if (this.state.selectedTimeType !== 0 || this.state.selectedTimeType !== 4) {
+      startTime = days[this.state.selectedTimeType].startTime;
+      endTime = days[this.state.selectedTimeType].endTime;
+    }
+
     const data = {
       "b64-image": this.state.imagePath,
       "business-id": '',
-      "business-locaiton": selectedOptionLocation === 0 ? true : false,
-      "category-id": this.props.business['category-id'],
-      details: this.state.text,
-      headline: this.state.headLine,
-      latitude: this.state.latitude,
-      longitude: this.state.longitude,
+      "business-locaiton": this.state.selectedOptionLocation && this.state.selectedOptionLocation === 0 ? true : false,
+      "discoverable-all-day": this.state.allDay,
+      "discoverable-days": this.state.discoverableDay,
+      "category-id": 1,
+      "details": this.state.text,
+      "headline": this.state.headLine,
+      "latitude": this.state.latitude,
+      "longitude": this.state.longitude,
+      "discoverable-end-time": endTime,
+      "discoverable-start-time": startTime,
       "micro-coin-offered": 50000000,
-      "offer-type-id": this.state.selectedOptionOffer,
-      "pause-date":'',
+      "offer-type-id": 1,
+      "is-deleted": false,
+      "pause-date": this.state.selectedDate ? this.state.selectedDate : '',
       "postal-code": '',
       "promotion-id": '',
       "promotion-value": '',
       "restricted-content": false,
       "state-or-province": '',
-      street: '',
-      "unique-code": '',
+      "street": '',
+      "unique-code": "buy1get1-2018",
       "usage-limit": 1000
     }
 
     console.log(this.state, data)
-
-    this.props.navigation.goBack(null);
+    this.props.createPromotion(this.props.userToken.token, data).then((res) => {
+      if (res.code === 200) {
+        self.props.navigation.goBack(null);
+      } else {
+        alert(res.message)
+      }
+    })
+    
   }
 
   render () {
@@ -304,11 +363,17 @@ class PromotionScreen extends React.Component {
     let days = [{
       value: 'All Day',id:0,
     }, {
-      value: 'mornings until 2pm'
+      value: 'mornings until 2pm',
+      startTime: '00:00 AM',
+      endTime: '02:00 PM'
     }, {
-      value: 'afternoon/evening12-30pm'
+      value: 'afternoon/evening12-30pm',
+      startTime: '00:00 PM',
+      endTime: '12:30 PM'
     },{
-      value:'after 7pm '
+      value:'after 7pm ',
+      startTime: '07:00 PM',
+      endTime: '00:00 AM'
     },
     ,{
       value:'pick hours'
@@ -688,7 +753,8 @@ function mapDispatchToProps(dispatch) {
 const mapStateToProps = state => {
   let signUpReducer = state.signUpReducer
   return {
-    error : signUpReducer.error
+    error : signUpReducer.error,
+    userToken: state.commonReducer.userToken
   };
 };
 

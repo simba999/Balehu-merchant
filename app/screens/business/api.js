@@ -7,8 +7,8 @@ export const createBusiness = (token,data) => {
   return result;
 }
 
-export const getMarketCategory = (token, data) => {
+export const getMarketCategory = (token) => {
 	let url =`/v1/app-auth/marketplace-business-categories`;
-	let result = coreApi.POST(url, token, data);
+	let result = coreApi.GET(url, token);
 	return result;
 }

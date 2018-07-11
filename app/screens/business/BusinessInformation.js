@@ -21,9 +21,9 @@ import { MainContainer,
 import { Dropdown } from 'react-native-material-dropdown';
 import TextInput from '../../components/textfield/CustomTextField';
 import CustomButton from '../../components/button/CustomButton';
-import { createNewBusiness, getMarketCategory } from '../../actions/business';
+import { getMarketCategory } from '../../actions/business';
 import { createWallet } from '../../EthereumLib/utils';
-import { createBusiness } from './api';
+import { createNewBusiness, getMarketCategories } from './action';
 
 import { connect } from "react-redux";
 import { login } from "./action";
@@ -74,8 +74,9 @@ class BusinessInformation extends React.Component {
     const self = this;
 
     getMarketCategory(this.props.userToken.token).then((res) => {
-      this.setState({ category: res.categories })
+      self.setState({category: res.categories})
     })
+    // this.props.getMarketCategories(this.props.userToken.token);
   }
 
   _signupBusiness() {
@@ -104,11 +105,11 @@ class BusinessInformation extends React.Component {
         'category-id': this.state.categoryVal
       };
 
-      createNewBusiness(this.props.userToken.token, data).then((res) => {
+      this.props.createNewBusiness(this.props.userToken.token, data).then((res) => {
         if (typeof(res.code) == "undefined") {
-          await createWallet(self.props.userInfo.password, self.props.userToken.token).then((res) => {
-            console.log(':::',res)
-          })
+          // await createWallet(self.props.userInfo.password, self.props.userToken.token).then((res) => {
+          //   console.log(':::',res)
+          // })
           
           self.props.setModalVisible(true,'Create Wallet');
         } else {
@@ -127,7 +128,8 @@ class BusinessInformation extends React.Component {
 
   render () {
     let { category } = this.state;
-    console.log('category: ', category)
+    let { market } = this.props;
+    console.log('category: ', category, market)
 
     return(
       <View style={{flex:1}}>
@@ -222,7 +224,8 @@ function mapDispatchToProps(dispatch) {
     return Object.assign(
       { dispatch: dispatch },
       bindActionCreators({
-        login
+        getMarketCategories,
+        createNewBusiness
       }, dispatch)
     );
   }
@@ -234,7 +237,8 @@ const mapStateToProps = state => {
   return {
     error:loginReducer.error,
     userToken: commonReducer.userToken,
-    userInfo: commonReducer.userinfo
+    userInfo: commonReducer.userinfo,
+    market: commonReducer.market
   };
 };
 

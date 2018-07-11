@@ -2,7 +2,7 @@ import { Constants } from './constants';
 let domainUrl = Constants.BASE_URL;
 
 export default {
-  GET: (urlPath,token,data) => new Promise((resolve, reject) => {
+  GET: (urlPath,token) => new Promise((resolve, reject) => {
     const url = domainUrl + urlPath
     console.log({url,token})
     fetch(url, {
