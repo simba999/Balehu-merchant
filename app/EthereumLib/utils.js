@@ -55,7 +55,7 @@ try{
 export function processCouponOutput(data){
 
 }
-export async function SendCoin(from,to,amount,token,password,BalehuAddress,nonce){
+export async function SendCoin(from,to,amount,token,password,BalehuAddress){
 try{
 var address=getLocalAddress()
 var encoded=abi.simpleEncode("transfer(address,uint256):(bool)",address,amount)
