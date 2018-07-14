@@ -3,6 +3,8 @@ package com.balehumerchant;
 import android.app.Application;
 
 import com.facebook.react.ReactApplication;
+import li.yunqi.rnsecurestorage.RNSecureStoragePackage;
+import com.reactlibrary.securekeystore.RNSecureKeyStorePackage;
 import com.reactnative.ivpusic.imagepicker.PickerPackage;
 import com.github.alinz.reactnativewebviewbridge.WebViewBridgePackage;
 import org.reactnative.camera.RNCameraPackage;
@@ -29,6 +31,8 @@ public class MainApplication extends Application implements ReactApplication {
     protected List<ReactPackage> getPackages() {
       return Arrays.<ReactPackage>asList(
           new MainReactPackage(),
+            new RNSecureStoragePackage(),
+            new RNSecureKeyStorePackage(),
           new PickerPackage(),
           new WebViewBridgePackage(),
           new RNCameraPackage(),

@@ -14,7 +14,7 @@ let { height, width } = Dimensions.get("window");
     width: Dimensions.get('window').width,
   };
 
-  const FirstRoute = () => <View />;
+const FirstRoute = () => <View />;
 const SecondRoute = () => <Marketing/>;
 const ThirdRoute = () => <Wallet />;
 const FourthRoute = () => <Account />;

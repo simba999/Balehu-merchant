@@ -30,9 +30,14 @@ import DateRange from './TimeRange'
 import DateTimePicker from 'react-native-modal-datetime-picker';
 import moment from 'moment';
 
+import { connect } from "react-redux";
+import { bindActionCreators } from "redux";
+import { createPromotion } from './action';
+import { getMarketCategory } from '../../actions/business';
+
 let radio_props = [
-  { label: "Balehu Coin", value: 0 },
-  { label: "Balehu Promotion", value: 1 }
+  { label: "Balehu Coin", value: 0 }
+  // { label: "Balehu Promotion", value: 1 }
 ];
 
 let pause_props = [
@@ -65,8 +70,8 @@ class PromotionScreen extends React.Component {
       ],
       value: null,
       selectedOptionOffer:null,
-      selectedOptionPause:null,
-      selectedOptionLocation:null,
+      selectedOptionPause:0,
+      selectedOptionLocation:0,
       text:null,
       DataProps:'',
       mode:true,
@@ -78,12 +83,21 @@ class PromotionScreen extends React.Component {
       selectedTime:'',
       openCalendar:false,
       selectedDate:null,
-      latitude:'',
-      longitude:'',
+      latitude:0,
+      longitude:0,
       saveValue:false,
       imagePath:'',
+      allDay: false,
+      selectedTimeType: 0,
+      discoverableDay: [],
+      categoryVal: 1,
+      category: []
     };
+
+    this._savePromotion = this._savePromotion.bind(this);
+    this.onChangeText = this.onChangeText.bind(this);
   }
+
   componentWillMount() {
 
     if(this.props.navigation.state.params){
@@ -94,7 +108,37 @@ class PromotionScreen extends React.Component {
         DataProps:this.props.navigation.state.params.index
       })
     }
+
+    getMarketCategory(this.props.userToken.token).then((res) => {
+      this.setState({category: res.categories})
+    })
   }
+
+  componentDidMount() {
+    this.watchID = navigator.geolocation.watchPosition((position) => {
+      // Create the object to update this.state.mapRegion through the onRegionChange function
+      let region = {
+        latitude:       position.coords.latitude,
+        longitude:      position.coords.longitude,
+        latitudeDelta:  0.00922*1.5,
+        longitudeDelta: 0.00421*1.5
+      }
+      console.log('lat&lng: ', latitude, longitude)
+      this.setState({
+        latitude: region.latitude, 
+        longitude: region.longitude
+      });
+    });
+  }
+
+  onChangeText(value, index) {
+    this.state.category.map((data) => {
+      if (data.value === value) {
+        this.setState({ categoryVal: data.id })
+      }
+    })
+  }
+
   handleBack = () =>{
     if(this.state.saveValue)
     {
@@ -111,16 +155,26 @@ class PromotionScreen extends React.Component {
   hideCalendar = () => this.setState({ openCalendar: false });
 
   selectedDays = (value,index) => {
+    let allDay = false
+
     if (value === 'pick hours')
     {
       this.setModalVisible(true,'Pick Hours')
     }
 
+    if (value === 'All Day')
+    {
+      allDay = true
+    }
+
     this.setState({
       saveValue:true,
       selectedTime: value,
+      selectedTimeType: index,
+      allDay: allDay
     });
   }
+
   ChangeDate  = (date) => {
     this.setState({selectedDate: date})
     this.hideCalendar();
@@ -189,16 +243,20 @@ class PromotionScreen extends React.Component {
   }
 
   handleDay = e => {
+    let discoverableDay = Object.assign([], this.state.discoverableDay);
+
     if(e.id<=4){
       let date = this.state.date;
       for (var i = 0; i <= date.length; i++) {
         if(date[i].id == e.id){
           date[i].selected = !e.selected;
+          discoverableDay.push(e.id);
           break;
         }
       }
       this.setState({
         date:date,
+        discoverableDay: discoverableDay,
         saveValue:true
       });
     }else{
@@ -206,11 +264,13 @@ class PromotionScreen extends React.Component {
       for (var i = 0; i <= date.length; i++) {
         if(date[i].id == e.id){
           date[i].selected = !e.selected;
+          discoverableDay.push(e.id);
           break;
         }
       }
       this.setState({
         date2:date,
+        discoverableDay: discoverableDay, 
         saveValue:true
 
       });
@@ -253,6 +313,83 @@ class PromotionScreen extends React.Component {
     this.setState({modalVisible: visible,modalName:modal});
   }
 
+  _savePromotion() {
+    const self = this;
+    
+    let days = [{
+        value: 'All Day',id:0,
+      }, {
+        value: 'mornings until 2pm',
+        startTime: '00:00 AM',
+        endTime: '02:00 PM'
+      }, {
+        value: 'afternoon/evening12-30pm',
+        startTime: '00:00 PM',
+        endTime: '12:30 PM'
+      },{
+        value:'after 7pm ',
+        startTime: '07:00 PM',
+        endTime: '00:00 AM'
+      },
+      ,{
+        value:'pick hours'
+      }
+    ];
+
+    let startTime = '';
+    let endTime = '';
+
+    if (this.state.selectedTimeType !== 0 || this.state.selectedTimeType !== 4) {
+      startTime = days[this.state.selectedTimeType].startTime;
+      endTime = days[this.state.selectedTimeType].endTime;
+    }
+
+    const data = {
+      "b64-image": this.state.imagePath,
+      "business-id": this.props.business['business-id'],
+      "business-locaiton": this.state.selectedOptionLocation && this.state.selectedOptionLocation === 0 ? true : false,
+      "discoverable-all-day": this.state.allDay,
+      "discoverable-days": this.state.discoverableDay,
+      "category-id": this.state.categoryVal,
+      "details": this.state.text,
+      "headline": this.state.headLine,
+      "discoverable-end-time": endTime,
+      "discoverable-start-time": startTime,
+      "micro-coin-offered": parseInt(this.state.text) * 1000000,
+      "offer-type-id": 1,
+      "is-deleted": false,
+      "postal-code": this.props.business['postal-code'],
+      "restricted-content": false,
+      "state-or-province": this.props.business['state-or-province'],
+      "street": this.props.business['address'],
+      "unique-code": "buy1get1-2018",
+      "usage-limit": 1000
+    }
+
+    if (this.state.imagePath) {
+      data["b64-image"] = this.state.imagePath;
+    }
+
+    if (this.state.selectedOptionLocation === 0) {
+      data["latitude"] = this.state.latitude;
+      data["longitude"] = this.state.longitude;
+    }
+
+    if (this.state.selectedDate) {
+      data["pause-date"] = this.state.selectedDate;
+    }
+
+    console.log(this.state, data, this.props)
+    this.props.createPromotion(this.props.userToken.token, data).then((res) => {
+      if (res.code === 200) {
+        self.props.navigation.goBack(null);
+      } else {
+        alert(res.message)
+      }
+    })
+    
+  }
+
   render () {
     let catagory = [{
       value: 'Food',
@@ -268,11 +405,17 @@ class PromotionScreen extends React.Component {
     let days = [{
       value: 'All Day',id:0,
     }, {
-      value: 'mornings until 2pm'
+      value: 'mornings until 2pm',
+      startTime: '00:00 AM',
+      endTime: '02:00 PM'
     }, {
-      value: 'afternoon/evening12-30pm'
+      value: 'afternoon/evening12-30pm',
+      startTime: '00:00 PM',
+      endTime: '12:30 PM'
     },{
-      value:'after 7pm '
+      value:'after 7pm ',
+      startTime: '07:00 PM',
+      endTime: '00:00 AM'
     },
     ,{
       value:'pick hours'
@@ -417,6 +560,7 @@ class PromotionScreen extends React.Component {
                       {radio_props.map((obj, i) => {
                         return (
                           <RadioButton key={i} style={{padding:this.state.selectedOptionOffer == 0 ? 8 : 2}} >
+                            {/*
                             <RadioButtonInput
                               obj={obj}
                               index={i}
@@ -428,6 +572,7 @@ class PromotionScreen extends React.Component {
                               buttonOuterSize={15}
                               buttonStyle={{ borderWidth: 1 }}
                               />
+                            */}
                             <RadioButtonLabel
                               obj={obj}
                               index={i}
@@ -445,28 +590,29 @@ class PromotionScreen extends React.Component {
                     </RadioForm>
                   </RadioContainer>
                   <InputContainer>
-                    {
-                      this.state.selectedOptionOffer == 0 ?
+                    {/*
+                      this.state.selectedOptionOffer == 0 ? */}
                       <BitTextInput
                         onChangeText={(text) => this.setState({text})}
                         value={this.state.text}
                         placeholder="Coin amount"
                         placeholderTextColor={Theme.colors.warmGrey}
                         underlineColorAndroid="transparent"
-                        />: null}
-                      </InputContainer>
-                    </Container>
-                    {
-                      this.state.selectedOptionOffer == 1 ?
-                      <BitTextInput
-                        onChangeText={(text) => this.setState({text})}
-                        value={this.state.text}
-                        placeholder="Enter Promotion"
-                        placeholderTextColor={Theme.colors.warmGrey}
-                        underlineColorAndroid="transparent"
                         />
-                      : null}
-                    </CommonContainer>
+                      {/*: null */}
+                  </InputContainer>
+                </Container>
+                {
+                  this.state.selectedOptionOffer == 1 ?
+                    <BitTextInput
+                      onChangeText={(text) => this.setState({text})}
+                      value={this.state.text}
+                      placeholder="Enter Promotion"
+                      placeholderTextColor={Theme.colors.warmGrey}
+                      underlineColorAndroid="transparent"
+                      />
+                    : null}
+              </CommonContainer>
                   </PromotionContainer>
 
                   <MarketPlaceContainer>
@@ -476,7 +622,8 @@ class PromotionScreen extends React.Component {
                       <HeadingText>Category</HeadingText>
                       <DropdownContainer>
                         <Dropdown
-                          data={catagory}
+                          data={this.state.category}
+                          onChangeText={this.onChangeText}
                           inputContainerStyle={{ borderBottomColor: 'transparent',marginTop:-15}}
                           placeholder={"Select catgory"}
                           />
@@ -597,7 +744,7 @@ class PromotionScreen extends React.Component {
                       <ButtonContainer>
                         <CustomButton
                           onPress={() => {
-                            this.props.navigation.goBack(null);
+                            this._savePromotion()
                           }}
                           fill={Theme.colors.lightBlue}
                           width="310"
@@ -639,4 +786,22 @@ class PromotionScreen extends React.Component {
               }
             }
 
-            export default PromotionScreen;
+function mapDispatchToProps(dispatch) {
+  return Object.assign(
+    { dispatch: dispatch },
+    bindActionCreators({createPromotion}, dispatch)
+  );
+}
+
+const mapStateToProps = state => {
+  let signUpReducer = state.signUpReducer
+  return {
+    error : signUpReducer.error,
+    userToken: state.commonReducer.userToken,
+    business: state.commonReducer.business,
+    userinfo: state.commonReducer.userinfo,
+    promotion: state.commonReducer.promotion,
+  };
+};
+
+export default connect(mapStateToProps, mapDispatchToProps)(PromotionScreen);
