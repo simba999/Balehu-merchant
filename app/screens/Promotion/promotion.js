@@ -33,6 +33,7 @@ import moment from 'moment';
 import { connect } from "react-redux";
 import { bindActionCreators } from "redux";
 import { createPromotion } from './action';
+import { getMarketCategory } from '../../actions/business';
 
 let radio_props = [
   { label: "Balehu Coin", value: 0 }
@@ -69,8 +70,8 @@ class PromotionScreen extends React.Component {
       ],
       value: null,
       selectedOptionOffer:null,
-      selectedOptionPause:null,
-      selectedOptionLocation:null,
+      selectedOptionPause:0,
+      selectedOptionLocation:0,
       text:null,
       DataProps:'',
       mode:true,
@@ -82,16 +83,19 @@ class PromotionScreen extends React.Component {
       selectedTime:'',
       openCalendar:false,
       selectedDate:null,
-      latitude:'',
-      longitude:'',
+      latitude:0,
+      longitude:0,
       saveValue:false,
       imagePath:'',
       allDay: false,
       selectedTimeType: 0,
-      discoverableDay: []
+      discoverableDay: [],
+      categoryVal: 1,
+      category: []
     };
 
     this._savePromotion = this._savePromotion.bind(this);
+    this.onChangeText = this.onChangeText.bind(this);
   }
 
   componentWillMount() {
@@ -104,7 +108,37 @@ class PromotionScreen extends React.Component {
         DataProps:this.props.navigation.state.params.index
       })
     }
+
+    getMarketCategory(this.props.userToken.token).then((res) => {
+      this.setState({category: res.categories})
+    })
   }
+
+  componentDidMount() {
+    this.watchID = navigator.geolocation.watchPosition((position) => {
+      // Create the object to update this.state.mapRegion through the onRegionChange function
+      let region = {
+        latitude:       position.coords.latitude,
+        longitude:      position.coords.longitude,
+        latitudeDelta:  0.00922*1.5,
+        longitudeDelta: 0.00421*1.5
+      }
+      console.log('lat&lng: ', latitude, longitude)
+      this.setState({
+        latitude: region.latitude, 
+        longitude: region.longitude
+      });
+    });
+  }
+
+  onChangeText(value, index) {
+    this.state.category.map((data) => {
+      if (data.value === value) {
+        this.setState({ categoryVal: data.id })
+      }
+    })
+  }
+
   handleBack = () =>{
     if(this.state.saveValue)
     {
@@ -312,32 +346,40 @@ class PromotionScreen extends React.Component {
 
     const data = {
       "b64-image": this.state.imagePath,
-      "business-id": '',
+      "business-id": this.props.business['business-id'],
       "business-locaiton": this.state.selectedOptionLocation && this.state.selectedOptionLocation === 0 ? true : false,
       "discoverable-all-day": this.state.allDay,
       "discoverable-days": this.state.discoverableDay,
-      "category-id": 1,
+      "category-id": this.state.categoryVal,
       "details": this.state.text,
       "headline": this.state.headLine,
-      "latitude": this.state.latitude,
-      "longitude": this.state.longitude,
       "discoverable-end-time": endTime,
       "discoverable-start-time": startTime,
-      "micro-coin-offered": 50000000,
+      "micro-coin-offered": parseInt(this.state.text) * 1000000,
       "offer-type-id": 1,
       "is-deleted": false,
-      "pause-date": this.state.selectedDate ? this.state.selectedDate : '',
-      "postal-code": '',
-      "promotion-id": '',
-      "promotion-value": '',
+      "postal-code": this.props.business['postal-code'],
       "restricted-content": false,
-      "state-or-province": '',
-      "street": '',
+      "state-or-province": this.props.business['state-or-province'],
+      "street": this.props.business['address'],
       "unique-code": "buy1get1-2018",
       "usage-limit": 1000
     }
 
-    console.log(this.state, data)
+    if (this.state.imagePath) {
+      data["b64-image"] = this.state.imagePath;
+    }
+
+    if (this.state.selectedOptionLocation === 0) {
+      data["latitude"] = this.state.latitude;
+      data["longitude"] = this.state.longitude;
+    }
+
+    if (this.state.selectedDate) {
+      data["pause-date"] = this.state.selectedDate;
+    }
+
+    console.log(this.state, data, this.props)
     this.props.createPromotion(this.props.userToken.token, data).then((res) => {
       if (res.code === 200) {
         self.props.navigation.goBack(null);
@@ -580,7 +622,8 @@ class PromotionScreen extends React.Component {
                       <HeadingText>Category</HeadingText>
                       <DropdownContainer>
                         <Dropdown
-                          data={catagory}
+                          data={this.state.category}
+                          onChangeText={this.onChangeText}
                           inputContainerStyle={{ borderBottomColor: 'transparent',marginTop:-15}}
                           placeholder={"Select catgory"}
                           />
@@ -754,7 +797,10 @@ const mapStateToProps = state => {
   let signUpReducer = state.signUpReducer
   return {
     error : signUpReducer.error,
-    userToken: state.commonReducer.userToken
+    userToken: state.commonReducer.userToken,
+    business: state.commonReducer.business,
+    userinfo: state.commonReducer.userinfo,
+    promotion: state.commonReducer.promotion,
   };
 };
 

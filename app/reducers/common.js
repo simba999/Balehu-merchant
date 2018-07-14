@@ -9,7 +9,7 @@ var initialstate = {
   userinfo:{},
   walletKey: '',
   promotion: [],
-  business: [],
+  business: {},
   market: []
 }
 
@@ -50,6 +50,10 @@ export const commonReducer = createReducer(initialstate, {
   },
   [types.CREATE_PROMOTION_ACTION](state, action){
     let promotion = state.promotion;
+    if (state.promotion) {
+      business = state.promotion
+    }
+    
     promotion.push(action.data);
 
     return Object.assign({}, state, {
@@ -57,11 +61,8 @@ export const commonReducer = createReducer(initialstate, {
     })
   },
   [types.SAVE_BUSINESS](state, action){
-    let business = state.business;
-    business.push(action.data);
-
     return Object.assign({}, state, {
-      business:business
+      business:action.data
     })
   },
   [types.GET_MARKET](state, action){

@@ -45,13 +45,23 @@ class CreateWalletScreen extends React.Component {
     this.state = {
       key: ''
     }
+
+    this.returnPrivateKey = this.returnPrivateKey.bind(this);
   }
 
   componentWillMount() {
-    // let key = GetPrivateKey(this.props.userInfo.password)
-
+    let key = this.returnPrivateKey(this.props.userInfo.password)
+    console.log('****: ', key)
     // this.props.createPrivateKey(key);
     // this.setState({key: key})
+  }
+
+  async returnPrivateKey(password) {
+    let key = ''
+    await GetPrivateKey(password).then((res) =>{
+      key = res;
+    })
+    return key
   }
 
   render () {

@@ -429,10 +429,10 @@ export function GetPrivateKey(password){
 
     return RNSecureKeyStore.get(password)
         .then((res) => {
-            //alert(res);
+            console.log('stored: ', res);
             return res
         }, (err) => {
-            console.log(err);
+            console.log('error', err);
         });
 }
 

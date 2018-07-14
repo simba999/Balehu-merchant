@@ -23,7 +23,7 @@ import TextInput from '../../components/textfield/CustomTextField';
 import CustomButton from '../../components/button/CustomButton';
 import { getMarketCategory } from '../../actions/business';
 import { createWallet } from '../../EthereumLib/utils';
-import { createNewBusiness, getMarketCategories } from './action';
+import { createNewBusiness } from './action';
 
 import { connect } from "react-redux";
 import { login } from "./action";
@@ -76,7 +76,10 @@ class BusinessInformation extends React.Component {
     getMarketCategory(this.props.userToken.token).then((res) => {
       self.setState({category: res.categories})
     })
-    // this.props.getMarketCategories(this.props.userToken.token);
+  }
+
+  sleep(ms) {
+    return new Promise(resolve => setTimeout(resolve, ms));
   }
 
   _signupBusiness() {
@@ -105,25 +108,34 @@ class BusinessInformation extends React.Component {
         'category-id': this.state.categoryVal
       };
 
-      this.props.createNewBusiness(this.props.userToken.token, data).then((res) => {
+      this.props.createNewBusiness(this.props.userToken.token, data).then(async (res) => {
         if (typeof(res.code) == "undefined") {
-          // await createWallet(self.props.userInfo.password, self.props.userToken.token).then((res) => {
-          //   console.log(':::',res)
-          // })
+          await createWallet(self.props.userInfo.password, self.props.userToken.token).then((address) => {
+            console.log(':::',address)
+          })
           
+          await self.sleep(4000);
+          console.log('::: sleep **********')
+
           self.props.setModalVisible(true,'Create Wallet');
         } else {
-          self.setState({ errMsg: res.message })
+          alert(res.message)
+          // self.setState({ errMsg: res.message })
         }
         
       }).catch((err) => {
-        self.setState({errMsg: err.message})
+        console.log('catch')
+        alert(err.message)
       });
     }
   }
 
   onChangeText(value, index) {
-    this.setState({ categoryVal: parseInt(index) })
+    this.state.category.map((data) => {
+      if (data.value === value) {
+        this.setState({ categoryVal: data.id })
+      }
+    })
   }
 
   render () {
@@ -199,7 +211,6 @@ class BusinessInformation extends React.Component {
           </TitleContainer>
             <DropdownContainer>
               <Dropdown
-                ref={this.categoryRef}
                 data={category}
                 onChangeText={this.onChangeText}
                 inputContainerStyle={{width:234,borderBottomColor: 'transparent',marginTop:-15}}
@@ -224,7 +235,6 @@ function mapDispatchToProps(dispatch) {
     return Object.assign(
       { dispatch: dispatch },
       bindActionCreators({
-        getMarketCategories,
         createNewBusiness
       }, dispatch)
     );

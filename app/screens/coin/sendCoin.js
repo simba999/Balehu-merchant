@@ -34,7 +34,6 @@ class SendCoinPage extends React.Component {
     }
 
     render(){
-      console.log(this.state)
       return(
         <MainContainer>
           <LabelText primary text>To</LabelText>

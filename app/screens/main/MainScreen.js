@@ -6,7 +6,7 @@ import {
   ImageBackground,
   Modal,
   TouchableOpacity,
-  ScrollView,
+  ScrollView
 } from 'react-native'
 import {MainContainer,
   LogoContainer,
@@ -18,6 +18,20 @@ import {MainContainer,
   UserContainer} from './style';
   import CustomButton from '../../components/button/CustomButton';
   import CustomIcon from '../../components/icon/svgicon';
+  // import BackgroundTimer from 'react-native-background-timer';
+  
+  // const EventEmitter = Platform.select({
+  //   ios: () => NativeAppEventEmitter,
+  //   android: () => DeviceEventEmitter,
+  // })();
+
+  // EventEmitter.addListener('backgroundTimer', () => {
+  //   // this will be executed once after 5 seconds
+  //   let idx = 0;
+  //   idx += 1;
+  //   console.log('toe: ', idx);
+  // });
+
   class MainScreen extends React.Component {
     static navigationOptions = {
       headerVisible:false,
@@ -31,6 +45,10 @@ import {MainContainer,
       super();
       this.state = {
       }
+    }
+
+    componentDidMount() {
+      // BackgroundTimer.start(5000);
     }
 
     render () {

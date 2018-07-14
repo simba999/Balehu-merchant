@@ -10,9 +10,11 @@ export function createNewBusiness (token, data) {
 		createBusiness(token, data).then((res) => {
 			console.log('create busienss: ', res)
 			if (typeof(res.code) === "undefined") {
+				const t_data = {...data, "user-id": res["user-id"], "business-id": res["business-id"]}
+				
 				dispatch({
 					type: SAVE_BUSINESS,
-					data: data
+					data: t_data
 				})
 
 				// resolve({ code: 200, message: 'create success'})
@@ -21,6 +23,9 @@ export function createNewBusiness (token, data) {
 				// resolve({ code: 500, message: 'internal server error'})
 			}
 			resolve(res)
+		}).catch(err => {
+			console.log('err: ', err)
+			resolve({ code: 500, message: err });
 		})
   	})
   		
