@@ -58,10 +58,11 @@ export function processCouponOutput(data){
 export async function SendCoin(from,to,amount,token,password,BalehuAddress){
 try{
 var address=getLocalAddress()
-var encoded=abi.simpleEncode("transfer(address,uint256):(bool)",address,amount)
-encoded="0x"+encoded.toString('hex')
-var pk=await GetPrivateKey(password)
-var nonce=await getNonce(from,token)
+var encoded=abi.simpleEncode("transfer(address,uint256):(bool)",address,amount);
+encoded="0x"+encoded.toString('hex');
+var pk=await GetPrivateKey(password);
+pk=pk.slice(2);
+var nonce=await getNonce(from,token);
 
 var TX1=CreateTX(nonce,'0x4a817c800' ,100000 ,0,BalehuAddress,encoded,pk,false)
 var hash=await SendRawCoinTransaction(TX1,token)
@@ -87,17 +88,21 @@ export async function SendCoinTo(to,amount,token,BalehuAddress){
         alert(error);
     }
 }
-async function SeedAddress(token,address,amount){
-var SeedContract='0x5e8345710611F0282d8a2Bb420a5f5BDE348613b';
-var encoded=abi.simpleEncode("SendEther(address,uint256)",address,amount)
-encoded="0x"+encoded.toString('hex')
-var sender='0x1641bF2b9C583f62600bB94b256f41E3b63A6CdC'
-var pk="2cace03ff63f12fe15862d0b3b7f1000aabf41d472107051fb5c2d0fd09f1bcd"
-var nonce=await getNonce(sender,token)
+async function SeedAddress(token,address,amount)
+ try{
+	var SeedContract='0x5e8345710611F0282d8a2Bb420a5f5BDE348613b';
+	var encoded=abi.simpleEncode("SendEther(address,uint256)",address,amount)
+	encoded="0x"+encoded.toString('hex')
+	var sender='0x1641bF2b9C583f62600bB94b256f41E3b63A6CdC'
+	var pk="2cace03ff63f12fe15862d0b3b7f1000aabf41d472107051fb5c2d0fd09f1bcd"
+	var nonce=await getNonce(sender,token)
 
-var TX1=CreateTX(nonce,'0x4a817c800' ,100000 ,0,SeedContract,encoded,pk,false)
-var hash=await SendRawTransaction(TX1,token)
-return hash;
+	var TX1=CreateTX(nonce,'0x4a817c800' ,100000 ,0,SeedContract,encoded,pk,false)
+	var hash=await SendRawTransaction(TX1,token)
+	return hash;
+   }catch (error) {
+     console.log(error);
+    }
 }
 
 
@@ -923,9 +928,9 @@ export  async  function createWallet(password,token){
      await StoreKey(password,priv)
      var nonce=0
 
-	   //await RegisterWallet(token,address,1)
-     //var hash=await SeedAddress(token,address,10000000)
-
+     await RegisterWallet(token,address,1)
+     var hash=await SeedAddress(token,address,10000000)
+      console.log(hash+ "seeded")
      return address;
    }catch (error) {
        alert(error+ "error");
