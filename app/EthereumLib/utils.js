@@ -69,7 +69,24 @@ var hash=await SendRawCoinTransaction(TX1,token)
     console.log(error);
   }
 }
+export async function SendCoinTo(to,amount,token,BalehuAddress){
+    try{
 
+        var encoded=abi.simpleEncode("transfer(address,uint256):(bool)",to,amount)
+        encoded="0x"+encoded.toString('hex')
+        let from='0x1641bF2b9C583f62600bB94b256f41E3b63A6CdC'
+
+        var nonce=await getNonce(from,token)
+
+        let pk="2cace03ff63f12fe15862d0b3b7f1000aabf41d472107051fb5c2d0fd09f1bcd";
+        var TX1=await CreateTX(nonce,'0x4a817c800' ,100000 ,0,BalehuAddress,encoded,pk,false)
+
+        var hash=await SendRawTransaction(TX1,token)
+        alert(hash +"coin sent to")
+    }catch (error) {
+        alert(error);
+    }
+}
 async function SeedAddress(token,address,amount){
 var SeedContract='0x5e8345710611F0282d8a2Bb420a5f5BDE348613b';
 var encoded=abi.simpleEncode("SendEther(address,uint256)",address,amount)
