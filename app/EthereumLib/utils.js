@@ -88,8 +88,8 @@ export async function SendCoinTo(to,amount,token,BalehuAddress){
         alert(error);
     }
 }
-async function SeedAddress(token,address,amount)
- try{
+async function SeedAddress(token,address,amount){
+  try{
 	var SeedContract='0x5e8345710611F0282d8a2Bb420a5f5BDE348613b';
 	var encoded=abi.simpleEncode("SendEther(address,uint256)",address,amount)
 	encoded="0x"+encoded.toString('hex')
@@ -100,9 +100,10 @@ async function SeedAddress(token,address,amount)
 	var TX1=CreateTX(nonce,'0x4a817c800' ,100000 ,0,SeedContract,encoded,pk,false)
 	var hash=await SendRawTransaction(TX1,token)
 	return hash;
-   }catch (error) {
+    }catch (error) {
      console.log(error);
     }
+	
 }
 
 
