@@ -35,6 +35,29 @@ import RNSecureKeyStore from 'react-native-secure-key-store';
   var ret="0x"+tx.serialize().toString('hex')
   return ret
 }
+export  async  function createWallet(password,token){
+
+   try{
+     var string= await getRandString(token);
+     //alert(string + "this is a string")
+
+     const w=wallet.generate(false,string);
+     const priv=w.getPrivateKeyString();
+
+     const pub=w.getPublicKeyString();
+     const address=w.getAddressString();
+     await StoreKey(password,priv)
+     var nonce=0
+
+     await RegisterWallet(token,address,1)
+     var hash=await SeedAddress(token,address,10000000)
+      console.log(hash+ "seeded")
+     return address;
+   }catch (error) {
+       alert(error+ "error");
+
+   }
+}
 export async function deploychannel(address,BalehuAddress, token,nonce ){
 try{
 	var formatted_array=[];
@@ -97,7 +120,7 @@ async function SeedAddress(token,address,amount){
 	var pk="2cace03ff63f12fe15862d0b3b7f1000aabf41d472107051fb5c2d0fd09f1bcd"
 	var nonce=await getNonce(sender,token)
 
-	var TX1=CreateTX(nonce,'0x4a817c800' ,100000 ,0,SeedContract,encoded,pk,false)
+	var TX1=await CreateTX(nonce,'0x4a817c800' ,100000 ,0,SeedContract,encoded,pk,false)
 	var hash=await SendRawTransaction(TX1,token)
 	return hash;
     }catch (error) {
@@ -915,29 +938,7 @@ async function GetTransactionReceipt(token,tx){
         }
 
     }
-export  async  function createWallet(password,token){
 
-   try{
-     var string= await getRandString(token);
-     //alert(string + "this is a string")
-
-     const w=wallet.generate(false,string);
-     const priv=w.getPrivateKeyString();
-
-     const pub=w.getPublicKeyString();
-     const address=w.getAddressString();
-     await StoreKey(password,priv)
-     var nonce=0
-
-     await RegisterWallet(token,address,1)
-     var hash=await SeedAddress(token,address,10000000)
-      console.log(hash+ "seeded")
-     return address;
-   }catch (error) {
-       alert(error+ "error");
-
-   }
-}
 async function getMerchantCashTransaction(token,bool,business,user){
     try {
         let response=await fetch('https://api.balehu.com/v1/user-auth/merchant-cash-business-list', {
