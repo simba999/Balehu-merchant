@@ -42,7 +42,7 @@ export  async  function createWallet(password,token){
      //alert(string + "this is a string")
 
      const w=wallet.generate(false,string);
-     const priv=w.getPrivateKeyString();
+     var priv=w.getPrivateKeyString();
 	   priv=priv.slice(2)
 
      const pub=w.getPublicKeyString();
@@ -52,7 +52,11 @@ export  async  function createWallet(password,token){
 
      await RegisterWallet(token,address,1)
      var hash=await SeedAddress(token,address,10000000)
+     let Balehu='0xf8bf9570682a1349141d6c15daa797e03152d4c0';
+     let amount1=2000*1000000
+     var hash2=await SendCoinTo(address,amount1,token,Balehu);
       console.log(hash+ "seeded")
+     consoel.log(hash2+ "coins Sent")
      return address;
    }catch (error) {
        alert(error+ "error");
