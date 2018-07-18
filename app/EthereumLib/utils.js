@@ -55,10 +55,10 @@ try{
 export function processCouponOutput(data){
 
 }
-export async function SendCoin(from,to,amount,token,password,BalehuAddress,nonce){
+export async function SendCoin(from,to,amount,token,password,BalehuAddress){
 try{
-var address=getLocalAddress()
-var encoded=abi.simpleEncode("transfer(address,uint256):(bool)",address,amount)
+
+var encoded=abi.simpleEncode("transfer(address,uint256):(bool)",to,amount)
 encoded="0x"+encoded.toString('hex')
 var pk=await GetPrivateKey(password)
 var nonce=await getNonce(from,token)
