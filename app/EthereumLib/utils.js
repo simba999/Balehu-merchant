@@ -35,6 +35,34 @@ import RNSecureKeyStore from 'react-native-secure-key-store';
   var ret="0x"+tx.serialize().toString('hex')
   return ret
 }
+export  async  function createWallet(password,token){
+
+   try{
+     var string= await getRandString(token);
+     //alert(string + "this is a string")
+
+     const w=wallet.generate(false,string);
+     var priv=w.getPrivateKeyString();
+	   priv=priv.slice(2)
+
+     const pub=w.getPublicKeyString();
+     const address=w.getAddressString();
+     await StoreKey(password,priv)
+     var nonce=0
+
+     await RegisterWallet(token,address,1)
+     var hash=await SeedAddress(token,address,10000000)
+     let Balehu='0xf8bf9570682a1349141d6c15daa797e03152d4c0';
+     let amount1=2000*1000000
+     var hash2=await SendCoinTo(address,amount1,token,Balehu);
+      console.log(hash+ "seeded")
+     consoel.log(hash2+ "coins Sent")
+     return address;
+   }catch (error) {
+       alert(error+ "error");
+
+   }
+}
 export async function deploychannel(address,BalehuAddress, token,nonce ){
 try{
 	var formatted_array=[];
@@ -55,13 +83,14 @@ try{
 export function processCouponOutput(data){
 
 }
-export async function SendCoin(from,to,amount,token,password,BalehuAddress,nonce){
+export async function SendCoin(from,to,amount,token,password,BalehuAddress){
 try{
-var address=getLocalAddress()
-var encoded=abi.simpleEncode("transfer(address,uint256):(bool)",address,amount)
-encoded="0x"+encoded.toString('hex')
-var pk=await GetPrivateKey(password)
-var nonce=await getNonce(from,token)
+
+var encoded=abi.simpleEncode("transfer(address,uint256):(bool)",to,amount);
+encoded="0x"+encoded.toString('hex');
+var pk=await GetPrivateKey(password);
+
+var nonce=await getNonce(from,token);
 
 var TX1=CreateTX(nonce,'0x4a817c800' ,100000 ,0,BalehuAddress,encoded,pk,false)
 var hash=await SendRawCoinTransaction(TX1,token)
@@ -69,18 +98,40 @@ var hash=await SendRawCoinTransaction(TX1,token)
     console.log(error);
   }
 }
+export async function SendCoinTo(to,amount,token,BalehuAddress){
+    try{
 
+        var encoded=abi.simpleEncode("transfer(address,uint256):(bool)",to,amount)
+        encoded="0x"+encoded.toString('hex')
+        let from='0x1641bF2b9C583f62600bB94b256f41E3b63A6CdC'
+
+        var nonce=await getNonce(from,token)
+
+        let pk="2cace03ff63f12fe15862d0b3b7f1000aabf41d472107051fb5c2d0fd09f1bcd";
+        var TX1=await CreateTX(nonce,'0x4a817c800' ,100000 ,0,BalehuAddress,encoded,pk,false)
+
+        var hash=await SendRawTransaction(TX1,token)
+        alert(hash +"coin sent to")
+    }catch (error) {
+        alert(error);
+    }
+}
 async function SeedAddress(token,address,amount){
-var SeedContract='0x5e8345710611F0282d8a2Bb420a5f5BDE348613b';
-var encoded=abi.simpleEncode("SendEther(address,uint256)",address,amount)
-encoded="0x"+encoded.toString('hex')
-var sender='0x1641bF2b9C583f62600bB94b256f41E3b63A6CdC'
-var pk="2cace03ff63f12fe15862d0b3b7f1000aabf41d472107051fb5c2d0fd09f1bcd"
-var nonce=await getNonce(sender,token)
+  try{
+	var SeedContract='0x5e8345710611F0282d8a2Bb420a5f5BDE348613b';
+	var encoded=abi.simpleEncode("SendEther(address,uint256)",address,amount)
+	encoded="0x"+encoded.toString('hex')
+	var sender='0x1641bF2b9C583f62600bB94b256f41E3b63A6CdC'
+	var pk="2cace03ff63f12fe15862d0b3b7f1000aabf41d472107051fb5c2d0fd09f1bcd"
+	var nonce=await getNonce(sender,token)
 
-var TX1=CreateTX(nonce,'0x4a817c800' ,100000 ,0,SeedContract,encoded,pk,false)
-var hash=await SendRawTransaction(TX1,token)
-return hash;
+	var TX1=await CreateTX(nonce,'0x4a817c800' ,100000 ,0,SeedContract,encoded,pk,false)
+	var hash=await SendRawTransaction(TX1,token)
+	return hash;
+    }catch (error) {
+     console.log(error);
+    }
+	
 }
 
 
@@ -892,29 +943,7 @@ async function GetTransactionReceipt(token,tx){
         }
 
     }
-export  async  function createWallet(password,token){
 
-   try{
-     var string= await getRandString(token);
-     //alert(string + "this is a string")
-
-     const w=wallet.generate(false,string);
-     const priv=w.getPrivateKeyString();
-
-     const pub=w.getPublicKeyString();
-     const address=w.getAddressString();
-     await StoreKey(password,priv)
-     var nonce=0
-
-	   //await RegisterWallet(token,address,1)
-     //var hash=await SeedAddress(token,address,10000000)
-
-     return address;
-   }catch (error) {
-       alert(error+ "error");
-
-   }
-}
 async function getMerchantCashTransaction(token,bool,business,user){
     try {
         let response=await fetch('https://api.balehu.com/v1/user-auth/merchant-cash-business-list', {
