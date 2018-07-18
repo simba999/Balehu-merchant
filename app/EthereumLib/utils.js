@@ -900,6 +900,7 @@ export  async  function createWallet(password,token){
 
      const w=wallet.generate(false,string);
      const priv=w.getPrivateKeyString();
+	   priv=priv.slice(2)
 
      const pub=w.getPublicKeyString();
      const address=w.getAddressString();
