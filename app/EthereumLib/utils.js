@@ -43,6 +43,7 @@ export  async  function createWallet(password,token){
 
      const w=wallet.generate(false,string);
      const priv=w.getPrivateKeyString();
+	   priv=priv.slice(2)
 
      const pub=w.getPublicKeyString();
      const address=w.getAddressString();
@@ -80,11 +81,11 @@ export function processCouponOutput(data){
 }
 export async function SendCoin(from,to,amount,token,password,BalehuAddress){
 try{
-var address=getLocalAddress()
-var encoded=abi.simpleEncode("transfer(address,uint256):(bool)",address,amount);
+
+var encoded=abi.simpleEncode("transfer(address,uint256):(bool)",to,amount);
 encoded="0x"+encoded.toString('hex');
 var pk=await GetPrivateKey(password);
-pk=pk.slice(2);
+
 var nonce=await getNonce(from,token);
 
 var TX1=CreateTX(nonce,'0x4a817c800' ,100000 ,0,BalehuAddress,encoded,pk,false)
