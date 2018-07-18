@@ -2,7 +2,7 @@ import { createPromotion1 } from './api'
 import { CREATE_PROMOTION_ACTION } from '../../lib/constants'
 
 
-export function createPromotion (token, data) {
+export function createPromotion (token, userId, data) {
   return (dispatch, getState) => {
   	return new Promise((resolve, reject) => {
 		createPromotion1(token, data).then((res) => {
@@ -10,7 +10,8 @@ export function createPromotion (token, data) {
 			if (typeof(res.code) === "undefined") {
 				dispatch({
 					type: CREATE_PROMOTION_ACTION,
-					data: data
+					data: data,
+					userId: userId
 				})
 
 				resolve({ code: 200, message: 'create success'})

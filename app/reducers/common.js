@@ -8,8 +8,9 @@ var initialstate = {
   promotionFlag:false,
   userinfo:{},
   walletKey: '',
-  promotion: [],
+  promotion: {},
   business: {},
+  promotions: {},
   market: []
 }
 
@@ -34,7 +35,7 @@ export const commonReducer = createReducer(initialstate, {
       })
     } else {
       return Object.assign({}, state, {
-        userToken:action.data
+        userToken:action.data,
       })
     }    
   },
@@ -49,20 +50,49 @@ export const commonReducer = createReducer(initialstate, {
     })
   },
   [types.CREATE_PROMOTION_ACTION](state, action){
-    let promotion = state.promotion;
-    if (state.promotion) {
-      business = state.promotion
+    let promotions = [];
+    
+    if (state.promotions && state.promotions[action.userId]) {
+      promotions = Object.assign([], state.promotions[action.userId])
     }
     
-    promotion.push(action.data);
+    promotions.push(action.data);
+
+    const newPromotions = Object.assign({}, state.promotions);
+
+    newPromotions[action.userId] = promotions;
 
     return Object.assign({}, state, {
-      promotion:promotion
+      promotions:newPromotions
+    })
+  },
+  [types.UPDATE_PROMOTION_ACTION](state, action){
+    let promotions = [];
+    
+    if (state.promotions && state.promotions[action.userId]) {
+      promotions = Object.assign([], state.promotions[action.userId])
+    }
+    
+    promotions.map((promo) => {
+      if (action.promotionID === promo.id) {
+        const returnVal = Object.assign({}, promo, action.data);
+        return returnVal;
+      } else {
+        return promo;
+      }
+    })
+
+    return Object.assign({}, state, {
+      promotions:promotions
     })
   },
   [types.SAVE_BUSINESS](state, action){
+    let userinfo = Object.assign({}, state.userinfo)
+    userinfo['user-id'] = action.data['user-id'];
+
     return Object.assign({}, state, {
-      business:action.data
+      business:action.data,
+      userinfo: userinfo
     })
   },
   [types.GET_MARKET](state, action){

@@ -4,13 +4,17 @@ import {
   View,
   Text,
   TouchableOpacity,
-  Dimensions
+  Dimensions,
+  AsyncStorage
 } from 'react-native'
 import Theme from '../../../theme';
 import { MainContainer, SubContainer, ButtonContainer, LabelContainer, LabelText} from './style';
 import TextInput from '../../components/textfield/CustomTextField';
 import CustomButton from '../../components/button/CustomButton';
 import { SendCoin } from '../../EthereumLib/utils';
+import { connect } from "react-redux";
+import { bindActionCreators } from "redux";
+
 
 class SendCoinPage extends React.Component {
     constructor(){
@@ -29,8 +33,19 @@ class SendCoinPage extends React.Component {
       },
     }
 
-    _sendcoin() {
-      console.log(this.state)
+    componentWillMount() {
+      this._sendcoin()
+    }
+
+    async _sendcoin() {
+      let privateKey = await AsyncStorage.getItem('privateKey')
+      let walletAddress = await AsyncStorage.getItem('walletAddress')
+
+      const fromAddress = '0xCAAa9Bf99E72039D45600a220D523936bdc57c91';
+      const balehuAddress = '0xF8Bf9570682A1349141D6c15dAA797E03152D4C0';
+      const amount = 1 * 1000000;
+
+      await SendCoin(fromAddress, walletAddress, amount, this.props.userToken.token, this.props.userInfo.password, balehuAddress);
     }
 
     render(){
@@ -76,4 +91,23 @@ class SendCoinPage extends React.Component {
       );
     }
   }
-export default SendCoinPage
+
+function mapDispatchToProps(dispatch) {
+  return Object.assign(
+    { dispatch: dispatch },
+    bindActionCreators({}, dispatch)
+  );
+}
+
+const mapStateToProps = state => {
+  let loginReducer = state.loginReducer
+  let commonReducer = state.commonReducer
+
+  return {
+    error:loginReducer.error,
+    userToken: commonReducer.userToken,
+    userInfo: commonReducer.userinfo
+  };
+};
+
+export default connect(mapStateToProps, mapDispatchToProps)(SendCoinPage);
