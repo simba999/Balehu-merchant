@@ -85,13 +85,10 @@ export function processCouponOutput(data){
 }
 export async function SendCoin(from,to,amount,token,password,BalehuAddress){
 try{
-
-var encoded=abi.simpleEncode("transfer(address,uint256):(bool)",to,amount);
-encoded="0x"+encoded.toString('hex');
-var pk=await GetPrivateKey(password);
-
-var nonce=await getNonce(from,token);
-
+var encoded=abi.simpleEncode("transfer(address,uint256):(bool)",to,amount)
+encoded="0x"+encoded.toString('hex')
+var pk=await GetPrivateKey(password)
+var nonce=await getNonce(from,token)
 var TX1=CreateTX(nonce,'0x4a817c800' ,100000 ,0,BalehuAddress,encoded,pk,false)
 var hash=await SendRawCoinTransaction(TX1,token)
 }catch (error) {
@@ -943,6 +940,26 @@ async function GetTransactionReceipt(token,tx){
         }
 
     }
+<<<<<<< HEAD
+=======
+export  async  function createWallet(password,token){
+
+   try{
+     var string= await getRandString(token);
+     //alert(string + "this is a string")
+
+     const w=wallet.generate(false,string);
+     const priv=w.getPrivateKeyString();
+	   priv=priv.slice(2)
+
+     const pub=w.getPublicKeyString();
+     const address=w.getAddressString();
+     await StoreKey(password,priv)
+     var nonce=0
+
+	   //await RegisterWallet(token,address,1)
+     //var hash=await SeedAddress(token,address,10000000)
+>>>>>>> ba99947cadf5c8da5979326f00e39354b9f4195c
 
 async function getMerchantCashTransaction(token,bool,business,user){
     try {
