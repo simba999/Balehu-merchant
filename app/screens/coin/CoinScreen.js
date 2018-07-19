@@ -3,7 +3,8 @@ import PropTypes from 'prop-types'
 import {
   View,
   Text,
-  TouchableOpacity
+  TouchableOpacity,
+  AsyncStorage
 } from 'react-native'
 import Theme from '../../../theme';
 import { MainContainer, SubContainer, ButtonContainer, CoinsContainer, AmountContainer, LabelContainer, QrCodeContainer, LabelText} from './style';
@@ -15,9 +16,25 @@ class CoinTabScreen extends React.Component {
   constructor(){
     super();
     this.state={
-      address:'2193/jamaplur,ahmedabad-380001'
+      address:'2193/jamaplur,ahmedabad-380001',
+      privateKey: ''
     }
   }
+
+  async componentWillMount() {
+    const data = await this._getAddressAndPrivate();
+
+    this.setState({ privateKey: data.privateKey, address: data.walletAddress })
+  }
+
+  async _getAddressAndPrivate() {
+    let privateKey = await AsyncStorage.getItem('privateKey')
+    let walletAddress = await AsyncStorage.getItem('walletAddress')
+
+    return { privateKey: privateKey, walletAddress: walletAddress }
+  }
+
+
   render(){
     return(
       <CoinsContainer>
@@ -45,7 +62,7 @@ class CoinTabScreen extends React.Component {
           <LabelText primary text>Public Address</LabelText>
           <QrCodeContainer>
             <QRCode
-             value={this.state.address}
+             value={this.state.privateKey+';;'+this.state.address}
              size={200}
             />
           </QrCodeContainer>

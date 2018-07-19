@@ -108,12 +108,16 @@ class BusinessInformation extends React.Component {
         'category-id': this.state.categoryVal
       };
 
+      let walletAddress = ''
+
       this.props.createNewBusiness(this.props.userToken.token, data).then(async (res) => {
         if (typeof(res.code) == "undefined") {
           await createWallet(self.props.userInfo.password, self.props.userToken.token).then((address) => {
             console.log(':::',address)
+            walletAddress = address
           })
           
+          await AsyncStorage.setItem('walletAddress', walletAddress)
           await self.sleep(4000);
           console.log('::: sleep **********')
 

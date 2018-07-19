@@ -33,6 +33,7 @@ import moment from 'moment';
 import { connect } from "react-redux";
 import { bindActionCreators } from "redux";
 import { createPromotion } from './action';
+import { updatePromotionStatusAction } from '../myPromotion/action';
 import { getMarketCategory } from '../../actions/business';
 
 let radio_props = [
@@ -77,7 +78,7 @@ class PromotionScreen extends React.Component {
       mode:true,
       htmlText:null,
       headLine:'',
-      updatedHTMLText:null,
+      updatedHTMLText:'',
       modalVisible: false,
       modalName:'',
       selectedTime:'',
@@ -91,7 +92,8 @@ class PromotionScreen extends React.Component {
       selectedTimeType: 0,
       discoverableDay: [],
       categoryVal: 1,
-      category: []
+      category: [],
+      selectedCategory: ''
     };
 
     this._savePromotion = this._savePromotion.bind(this);
@@ -99,23 +101,72 @@ class PromotionScreen extends React.Component {
   }
 
   componentWillMount() {
-
     if(this.props.navigation.state.params){
       let data = this.props.navigation.state.params.index
+      let selectedCategory = ''
+      let date = []
+      let date2 = []
+
+      if (this.state.date.length != 0) {
+
+      }
+      this.state.date.map((item) => {
+        data['discoverable-days'].map((day) => {
+          let tmp = Object.assign({}, item)
+
+          if (item.id === day) {
+            tmp['selected'] = true
+          }
+
+          date.push(tmp)
+        })
+      })
+
+      this.state.date2.map((item) => {
+        data['discoverable-days'].map((day) => {
+          let tmp = Object.assign({}, item)
+
+          if (item.id === day) {
+            tmp['selected'] = true
+          }
+
+          date2.push(tmp)
+        })
+      })
+
       this.setState({
-        headLine : data.title,
-        updatedHTMLText:data.description,
+        "headLine":data.headline,
+        "updatedHTMLText":data.details,
+        "categoryVal": data["category-id"],
+        "imagePath":data["b64-image"],
+        "business-id":data["business-id"],
+        "selectedOptionLocation": data["business-locaiton"] ? 0 : 1,
+        "allDay":data["discoverable-all-day"],
+        "discoverableDay":data["discoverable-days"],
+        "latitude":data["latitude"],
+        "longitude":data["longitude"],
+        "text": (data['micro-coin-offered'] / 1000000).toString(),
+        "date": date,
+        "date2": date2,
         DataProps:this.props.navigation.state.params.index
       })
     }
 
     getMarketCategory(this.props.userToken.token).then((res) => {
+      // let tdata = this.props.navigation.state.params.index
+      // res.categories.map((item) => {
+      //   if (item.id === tdata['category-id']) {
+      //     selectedCategory = tdata.value
+      //   }
+      // })
+
       this.setState({category: res.categories})
     })
   }
 
   componentDidMount() {
-    this.watchID = navigator.geolocation.watchPosition((position) => {
+    this.watchID = navigator.geolocation.watchPosition((position, err, option) => {
+      console.log(position, err, option)
       // Create the object to update this.state.mapRegion through the onRegionChange function
       let region = {
         latitude:       position.coords.latitude,
@@ -129,6 +180,8 @@ class PromotionScreen extends React.Component {
         longitude: region.longitude
       });
     });
+
+    console.log(this.watchID)
   }
 
   onChangeText(value, index) {
@@ -309,12 +362,22 @@ class PromotionScreen extends React.Component {
       }, 500)
     }
   }
+
   setModalVisible = (visible,modal) => {
     this.setState({modalVisible: visible,modalName:modal});
   }
 
-  _savePromotion() {
+  async getRichTextContent() {
+    await this.richtext.getContentHtml().then((html) => {
+      this.setState({
+        updatedHTMLText:html
+      })
+    })
+  }
+
+  async _savePromotion() {
     const self = this;
+    await this.getRichTextContent();
     
     let days = [{
         value: 'All Day',id:0,
@@ -344,50 +407,67 @@ class PromotionScreen extends React.Component {
       endTime = days[this.state.selectedTimeType].endTime;
     }
 
-    const data = {
-      "b64-image": this.state.imagePath,
-      "business-id": this.props.business['business-id'],
-      "business-locaiton": this.state.selectedOptionLocation && this.state.selectedOptionLocation === 0 ? true : false,
-      "discoverable-all-day": this.state.allDay,
-      "discoverable-days": this.state.discoverableDay,
-      "category-id": this.state.categoryVal,
-      "details": this.state.text,
-      "headline": this.state.headLine,
-      "discoverable-end-time": endTime,
-      "discoverable-start-time": startTime,
-      "micro-coin-offered": parseInt(this.state.text) * 1000000,
-      "offer-type-id": 1,
-      "is-deleted": false,
-      "postal-code": this.props.business['postal-code'],
-      "restricted-content": false,
-      "state-or-province": this.props.business['state-or-province'],
-      "street": this.props.business['address'],
-      "unique-code": "buy1get1-2018",
-      "usage-limit": 1000
-    }
-
-    if (this.state.imagePath) {
-      data["b64-image"] = this.state.imagePath;
-    }
-
-    if (this.state.selectedOptionLocation === 0) {
-      data["latitude"] = this.state.latitude;
-      data["longitude"] = this.state.longitude;
-    }
-
-    if (this.state.selectedDate) {
-      data["pause-date"] = this.state.selectedDate;
-    }
-
-    console.log(this.state, data, this.props)
-    this.props.createPromotion(this.props.userToken.token, data).then((res) => {
-      if (res.code === 200) {
-        self.props.navigation.goBack(null);
-      } else {
-        alert(res.message)
+    if (
+      this.state.headLine == '' ||
+      this.state.updatedHTMLText === ''
+    ) {
+      alert('Please, fill out input fields')
+    } else {
+      const data = {
+        "b64-image": this.state.imagePath,
+        "business-id": this.props.business['business-id'],
+        "business-locaiton": this.state.selectedOptionLocation && this.state.selectedOptionLocation === 0 ? true : false,
+        "discoverable-all-day": this.state.allDay,
+        "discoverable-days": this.state.discoverableDay,
+        "category-id": this.state.categoryVal,
+        "details": this.state.updatedHTMLText,
+        "headline": this.state.headLine,
+        "discoverable-end-time": endTime,
+        "discoverable-start-time": startTime,
+        "micro-coin-offered": parseInt(this.state.text) * 1000000,
+        "offer-type-id": 1,
+        "is-deleted": false,
+        "postal-code": this.props.business['postal-code'],
+        "restricted-content": false,
+        "state-or-province": this.props.business['state-or-province'],
+        "street": this.props.business['address'],
+        "unique-code": "buy1get1-2018",
+        "usage-limit": 1000
       }
-    })
-    
+
+      if (this.state.imagePath) {
+        data["b64-image"] = this.state.imagePath;
+      }
+
+      if (this.state.selectedOptionLocation === 0) {
+        data["latitude"] = this.state.latitude;
+        data["longitude"] = this.state.longitude;
+      }
+
+      if (this.state.selectedDate) {
+        data["pause-date"] = this.state.selectedDate;
+      }
+
+      if (!this.state.DataProps) {
+        this.props.createPromotion(this.props.userToken.token, this.props.userinfo['user-id'], data).then((res) => {
+          if (res.code === 200) {
+            self.props.navigation.goBack(null);
+          } else {
+            alert(res.message)
+          }
+        })
+      } else {
+        this.props.updatePromotionStatusAction(this.props.userToken.token, data, this.props.userinfo['user-id'])
+          .then((res) => {
+            if (res.code === 200) {
+              self.props.navigation.goBack(null);
+            } else {
+              alert(res.message)
+            }
+          })  
+      }
+      
+    }
   }
 
   render () {
@@ -624,6 +704,7 @@ class PromotionScreen extends React.Component {
                         <Dropdown
                           data={this.state.category}
                           onChangeText={this.onChangeText}
+                          value={this.state.selectedCategory}
                           inputContainerStyle={{ borderBottomColor: 'transparent',marginTop:-15}}
                           placeholder={"Select catgory"}
                           />
@@ -789,7 +870,7 @@ class PromotionScreen extends React.Component {
 function mapDispatchToProps(dispatch) {
   return Object.assign(
     { dispatch: dispatch },
-    bindActionCreators({createPromotion}, dispatch)
+    bindActionCreators({createPromotion, updatePromotionStatusAction}, dispatch)
   );
 }
 

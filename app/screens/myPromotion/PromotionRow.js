@@ -23,6 +23,12 @@ import {
 } from './PromotionRowStyle.js';
 import CustomButton from '../../components/button/CustomButton';
 
+import { connect } from "react-redux";
+import { login } from "./action";
+import { bindActionCreators } from "redux";
+import { updatePromotionStatusAction } from './action';
+
+
 class PromotionRow extends React.Component {
   static navigationOptions = {
     headerVisible:false,
@@ -37,9 +43,29 @@ class PromotionRow extends React.Component {
       switchValue: false,
     }
   }
-  toggleSwitch = (value) => {
-    this.setState({switchValue: value})
+
+  componentWillMount() {
+    this.setState({
+      switchValue: !this.props.data['is-deleted']
+    })
   }
+
+  toggleSwitch = (value) => {
+    const data = {
+      "is-deleted": !value,
+      "promotion-id": this.props.data['promotion-id']
+    }
+
+    this.props.updatePromotionStatusAction(this.props.userToken.token, data, this.props.userInfo['user-id'])
+      .then((res) => {
+        if (res.code === 200) {
+          this.setState({switchValue: value})
+        } else {
+          alert(res.message)
+        }
+      })   
+  }
+
   text_truncate = (str, length, ending) => {
     if (str.length > length) {
       return str.substring(0, length - ending.length) + ending;
@@ -47,6 +73,7 @@ class PromotionRow extends React.Component {
       return str;
     }
   }
+
   render () {
     let data = this.props.data ? this.props.data : ''
     return(
@@ -55,54 +82,73 @@ class PromotionRow extends React.Component {
           <ImageContainer>
             <Image
             source={require('../../../assets/images/layer-1.png')} style={{width:120,height:67}}/>
-        </ImageContainer>
-        <DetailContianer>
-          <TitleText>{this.text_truncate(data.title,18,'..')}</TitleText>
-          <ContentText>{this.text_truncate(data.description,80,'..')} </ContentText>
-        </DetailContianer>
-      </RowContainer>
-      <BottomRowContainer>
-        <SwitchContainer>
-        <Switch
-          onValueChange = {this.toggleSwitch}
-          value={this.state.switchValue}
-          onTintColor="#e3e5ef"
-          thumbTintColor={this.state.switchValue ? Theme.colors.skyBlue :"#e3e5ef"}
-          tintColor="#e3e5ef"/>
-        <ActiveText>Active</ActiveText>
-        </SwitchContainer>
-        <ButtonContainer>
-          <CustomButton
-            border={"#e0e0e0"}
-            textColor={"#757575"}
-            fontSize={Theme.fontSize.small}
-            width="96"
-            height="33"
-            text="Edit Promotion"
-            data={data}
-            onPress={()=>{
-              this.props.navigation.navigate('Promotion',{index:data});
-            }}
-            />
-        </ButtonContainer>
-        <ButtonContainer>
-          <CustomButton
-            border={"#e0e0e0"}
-            textColor={"#757575"}
-            fontSize={Theme.fontSize.small}
-            width="85"
-            height="33"
-            text="Analytics"
-            onPress={()=>{
-              this.props.navigation.navigate('SingleAnalytics');
-            }}/>
-        </ButtonContainer>
-
-      </BottomRowContainer>
-
-    </MainContainer>
-  )
-}
+          </ImageContainer>
+          <DetailContianer>
+            <TitleText>{this.text_truncate(data.headline,18,'..')}</TitleText>
+            <ContentText>{this.text_truncate(data.details,80,'..')} </ContentText>
+          </DetailContianer>
+        </RowContainer>
+        <BottomRowContainer>
+          <SwitchContainer>
+          <Switch
+            onValueChange = {this.toggleSwitch}
+            value={this.state.switchValue}
+            onTintColor="#e3e5ef"
+            thumbTintColor={this.state.switchValue ? Theme.colors.skyBlue :"#e3e5ef"}
+            tintColor="#e3e5ef"/>
+          <ActiveText>{this.state.switchValue ? 'Active' : 'Inactive'}</ActiveText>
+          </SwitchContainer>
+          <ButtonContainer>
+            <CustomButton
+              border={"#e0e0e0"}
+              textColor={"#757575"}
+              fontSize={Theme.fontSize.small}
+              width="96"
+              height="33"
+              text="Edit Promotion"
+              data={data}
+              onPress={()=>{
+                this.props.navigation.navigate('Promotion',{index:data});
+              }}
+              />
+          </ButtonContainer>
+          <ButtonContainer>
+            <CustomButton
+              border={"#e0e0e0"}
+              textColor={"#757575"}
+              fontSize={Theme.fontSize.small}
+              width="85"
+              height="33"
+              text="Analytics"
+              onPress={()=>{
+                this.props.navigation.navigate('SingleAnalytics');
+              }}/>
+          </ButtonContainer>
+        </BottomRowContainer>
+      </MainContainer>
+    )
+  }
 }
 
-export default PromotionRow;
+function mapDispatchToProps(dispatch) {
+    return Object.assign(
+      { dispatch: dispatch },
+      bindActionCreators({
+        updatePromotionStatusAction
+      }, dispatch)
+    );
+  }
+
+const mapStateToProps = state => {
+  let loginReducer = state.loginReducer
+  let commonReducer = state.commonReducer
+  console.log('Eman: ', state)
+  return {
+    error:loginReducer.error,
+    userToken: commonReducer.userToken,
+    userInfo: commonReducer.userinfo,
+    market: commonReducer.market
+  };
+};
+
+export default connect(mapStateToProps, mapDispatchToProps)(PromotionRow);

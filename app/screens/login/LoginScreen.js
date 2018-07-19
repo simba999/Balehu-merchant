@@ -39,32 +39,33 @@ class LoginScreen extends React.Component {
     super()
 
     this.state = {
-      username: 'simba9090@gmail.com',
+      username: 'simballl@mail.com',
       password: 'Kingsimba126!@',
       errMsg: ''
     }
   }
 
+  sleep(ms) {
+    return new Promise(resolve => setTimeout(resolve, ms));
+  }
+
   handleSubmit = () =>{
     const self = this;
 
-    self.props.setModalVisible(false);
-    self.props.navigation.navigate('Main');
-
-
-    // if (this.state.username != '' && this.state.password != '') {
-    //   this.props.login(this.state).then((res) => {
-    //     if (res.code === 200) {
-    //       self.props.setModalVisible(false);
-    //       self.props.navigation.navigate('Main');
-    //     } else {
-    //       alert(res.message)
-    //     }
-    //   })
-    //   // NavigationActions.navigate({ routeName: 'Main' })
-    // } else {
-    //   this.setState({ errMsg: 'Input Field must be filled' })
-    // }
+    if (this.state.username != '' && this.state.password != '') {
+      this.props.login(this.state).then((res) => {
+        if (res.code === 200) {
+          // self.sleep(4000)
+          self.props.setModalVisible(false);
+          self.props.navigation.navigate('Main');
+        } else {
+          alert(res.message)
+        }
+      })
+      // NavigationActions.navigate({ routeName: 'Main' })
+    } else {
+      this.setState({ errMsg: 'Input Field must be filled' })
+    }
   }
 
   render () {

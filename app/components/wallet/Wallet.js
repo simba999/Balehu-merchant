@@ -110,7 +110,7 @@ import { MainContainer,
                 <Card title={this.state.modalName}>
                   {
                     this.state.modalName=='Send Coins'?
-                    <SendCoin  setModalVisible={this.setModalVisible}/>
+                    <SendCoinPage  setModalVisible={this.setModalVisible}/>
                     : this.state.modalName=='Receive Coins'?
                     <CoinScreen screen={'request'}  setModalVisible={this.setModalVisible}/>
                     : this.state.modalName=='Transaction History'?
