@@ -940,26 +940,6 @@ async function GetTransactionReceipt(token,tx){
         }
 
     }
-<<<<<<< HEAD
-=======
-export  async  function createWallet(password,token){
-
-   try{
-     var string= await getRandString(token);
-     //alert(string + "this is a string")
-
-     const w=wallet.generate(false,string);
-     const priv=w.getPrivateKeyString();
-	   priv=priv.slice(2)
-
-     const pub=w.getPublicKeyString();
-     const address=w.getAddressString();
-     await StoreKey(password,priv)
-     var nonce=0
-
-	   //await RegisterWallet(token,address,1)
-     //var hash=await SeedAddress(token,address,10000000)
->>>>>>> ba99947cadf5c8da5979326f00e39354b9f4195c
 
 async function getMerchantCashTransaction(token,bool,business,user){
     try {
