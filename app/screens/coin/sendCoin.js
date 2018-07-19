@@ -33,19 +33,16 @@ class SendCoinPage extends React.Component {
       },
     }
 
-    componentWillMount() {
-      this._sendcoin()
-    }
-
     async _sendcoin() {
       let privateKey = await AsyncStorage.getItem('privateKey')
       let walletAddress = await AsyncStorage.getItem('walletAddress')
 
       const fromAddress = '0xCAAa9Bf99E72039D45600a220D523936bdc57c91';
       const balehuAddress = '0xF8Bf9570682A1349141D6c15dAA797E03152D4C0';
-      const amount = 1 * 1000000;
+      const amount = parseFloat(this.state.amount) * 1000000;
 
       await SendCoin(fromAddress, walletAddress, amount, this.props.userToken.token, this.props.userInfo.password, balehuAddress);
+      this.props.setModalVisible(true,'Transfer Notification');
     }
 
     render(){

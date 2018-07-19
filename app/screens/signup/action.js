@@ -68,7 +68,6 @@ export function userSignUp (data) {
           return new Promise((resolve, reject) => {
             resolve({code: 500, message: r.message})
           })
-          // return {code: 500, message: r.message}
         }
       }
     })

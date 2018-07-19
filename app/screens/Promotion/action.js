@@ -7,10 +7,13 @@ export function createPromotion (token, userId, data) {
   	return new Promise((resolve, reject) => {
 		createPromotion1(token, data).then((res) => {
 			console.log('create protmotion: ', res)
-			if (typeof(res.code) === "undefined") {
+			if (typeof(res.result) !== "undefined") {
+				let tdata = data
+				tdata["promotion-id"] = res.result
+				
 				dispatch({
 					type: CREATE_PROMOTION_ACTION,
-					data: data,
+					data: tdata,
 					userId: userId
 				})
 

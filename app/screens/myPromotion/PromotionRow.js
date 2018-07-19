@@ -56,8 +56,14 @@ class PromotionRow extends React.Component {
       "promotion-id": this.props.data['promotion-id']
     }
 
-    updatePromotionStatusAction(this.props.userToken.token, data)
-    
+    this.props.updatePromotionStatusAction(this.props.userToken.token, data, this.props.userInfo['user-id'])
+      .then((res) => {
+        if (res.code === 200) {
+          this.setState({switchValue: value})
+        } else {
+          alert(res.message)
+        }
+      })   
   }
 
   text_truncate = (str, length, ending) => {

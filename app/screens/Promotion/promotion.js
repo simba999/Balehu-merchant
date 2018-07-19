@@ -33,6 +33,7 @@ import moment from 'moment';
 import { connect } from "react-redux";
 import { bindActionCreators } from "redux";
 import { createPromotion } from './action';
+import { updatePromotionStatusAction } from '../myPromotion/action';
 import { getMarketCategory } from '../../actions/business';
 
 let radio_props = [
@@ -100,18 +101,20 @@ class PromotionScreen extends React.Component {
   }
 
   componentWillMount() {
-
     if(this.props.navigation.state.params){
       let data = this.props.navigation.state.params.index
       let selectedCategory = ''
       let date = []
-      let date1 = []
+      let date2 = []
 
+      if (this.state.date.length != 0) {
+
+      }
       this.state.date.map((item) => {
-        data['discoverableDay'].map((day) => {
+        data['discoverable-days'].map((day) => {
           let tmp = Object.assign({}, item)
 
-          if (item.id === data.id) {
+          if (item.id === day) {
             tmp['selected'] = true
           }
 
@@ -119,15 +122,15 @@ class PromotionScreen extends React.Component {
         })
       })
 
-      this.state.date1.map((item) => {
-        data['discoverableDay'].map((day) => {
+      this.state.date2.map((item) => {
+        data['discoverable-days'].map((day) => {
           let tmp = Object.assign({}, item)
 
-          if (item.id === data.id) {
+          if (item.id === day) {
             tmp['selected'] = true
           }
 
-          date1.push(tmp)
+          date2.push(tmp)
         })
       })
 
@@ -142,26 +145,28 @@ class PromotionScreen extends React.Component {
         "discoverableDay":data["discoverable-days"],
         "latitude":data["latitude"],
         "longitude":data["longitude"],
-        "text": data['micro-coin-offered'] / 1000000,
+        "text": (data['micro-coin-offered'] / 1000000).toString(),
         "date": date,
-        "date1": date1,
+        "date2": date2,
         DataProps:this.props.navigation.state.params.index
       })
     }
 
     getMarketCategory(this.props.userToken.token).then((res) => {
-      res.categories.map((item) => {
-        if (item.id === data['category-id']) {
-          selectedCategory = data.value
-        }
-      })
+      // let tdata = this.props.navigation.state.params.index
+      // res.categories.map((item) => {
+      //   if (item.id === tdata['category-id']) {
+      //     selectedCategory = tdata.value
+      //   }
+      // })
 
-      this.setState({category: res.categories, selectedCategory: selectedCategory})
+      this.setState({category: res.categories})
     })
   }
 
   componentDidMount() {
-    this.watchID = navigator.geolocation.watchPosition((position) => {
+    this.watchID = navigator.geolocation.watchPosition((position, err, option) => {
+      console.log(position, err, option)
       // Create the object to update this.state.mapRegion through the onRegionChange function
       let region = {
         latitude:       position.coords.latitude,
@@ -175,6 +180,8 @@ class PromotionScreen extends React.Component {
         longitude: region.longitude
       });
     });
+
+    console.log(this.watchID)
   }
 
   onChangeText(value, index) {
@@ -441,14 +448,25 @@ class PromotionScreen extends React.Component {
         data["pause-date"] = this.state.selectedDate;
       }
 
-      console.log(this.state, data, this.props)
-      this.props.createPromotion(this.props.userToken.token, this.props.userinfo['user-id'], data).then((res) => {
-        if (res.code === 200) {
-          self.props.navigation.goBack(null);
-        } else {
-          alert(res.message)
-        }
-      })
+      if (!this.state.DataProps) {
+        this.props.createPromotion(this.props.userToken.token, this.props.userinfo['user-id'], data).then((res) => {
+          if (res.code === 200) {
+            self.props.navigation.goBack(null);
+          } else {
+            alert(res.message)
+          }
+        })
+      } else {
+        this.props.updatePromotionStatusAction(this.props.userToken.token, data, this.props.userinfo['user-id'])
+          .then((res) => {
+            if (res.code === 200) {
+              self.props.navigation.goBack(null);
+            } else {
+              alert(res.message)
+            }
+          })  
+      }
+      
     }
   }
 
@@ -852,7 +870,7 @@ class PromotionScreen extends React.Component {
 function mapDispatchToProps(dispatch) {
   return Object.assign(
     { dispatch: dispatch },
-    bindActionCreators({createPromotion}, dispatch)
+    bindActionCreators({createPromotion, updatePromotionStatusAction}, dispatch)
   );
 }
 

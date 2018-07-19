@@ -84,34 +84,33 @@ export const getMarketCategory = (token, dispatch) => {
 	})
 }
 
-export const getBusiness = async(dispatch) => {
-	const token = await AsyncStorage.getItem('token');
+// export const getBusiness = async(dispatch) => {
+// 	const token = await AsyncStorage.getItem('token');
 
-	return fetch(API_URL+GET_BUSINESS_URL, {
-		method: 'get',
-		headers: {
-			'Accept': 'application/json',
-			'Content-Type': 'application/json',
-			"Authorization": "Bearer " + token
-		}
-	})
-	.then(response => {
-		return response.json().then((res) => {
+// 	return fetch(API_URL+GET_BUSINESS_URL, {
+// 		method: 'get',
+// 		headers: {
+// 			'Accept': 'application/json',
+// 			'Content-Type': 'application/json',
+// 			"Authorization": "Bearer " + token
+// 		}
+// 	})
+// 	.then(response => {
+// 		return response.json().then((res) => {
 			
-			if (typeof(res.code) == "undefined") {
-				// dispatch({ type: 'CHANGE_BUSINESS', payload: {data: res.businesses[0]} });
-				return { code: 200, message: 'success', businesses: data.businesses }
-			} else {
-				return { code: res.code, message: res.message }
-			}
-		});
-	})
-	.catch(err => {
-		console.log('err: ', err)
-		return { code: 500, message: err };
-	})
-}
+// 			if (typeof(res.code) == "undefined") {
+// 				return { code: 200, message: 'success', businesses: data.businesses }
+// 			} else {
+// 				return { code: res.code, message: res.message }
+// 			}
+// 		});
+// 	})
+// 	.catch(err => {
+// 		console.log('err: ', err)
+// 		return { code: 500, message: err };
+// 	})
+// }
 
-export const changeBusinessStatus = (data, dispatch) => {
-	dispatch({ type: 'CHANGE_BUSINESS', payload: {data: data} });	
-}
+// export const changeBusinessStatus = (data, dispatch) => {
+// 	dispatch({ type: 'CHANGE_BUSINESS', payload: {data: data} });	
+// }

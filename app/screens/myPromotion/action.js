@@ -1,14 +1,16 @@
 import { updatePromotionStatus } from './api';
 import { UPDATE_PROMOTION_ACTION } from '../../lib/constants'
 
-export function updatePromotionStatusAction (token, data) {
-  console.log(token, data)
+export function updatePromotionStatusAction (token, data, userId) {
   return (dispatch, getState) => {
+    console.log(token, data)
   	return updatePromotionStatus(token, data).then((res) => {
+      console.log(token, data)
   		if (typeof(res.code) === "undefined") {
   			dispatch({
-  				action: UPDATE_PROMOTION_ACTION,
-  				data: data
+  				type: UPDATE_PROMOTION_ACTION,
+  				data: data,
+          userId: userId
   			})
 
   			return { code:200 }
@@ -16,7 +18,7 @@ export function updatePromotionStatusAction (token, data) {
   			return {code: res.code, message: res.message}
   		}
   	}).catch((err) => {
-  		return { code: res.code, message: res.message }
+  		return { code: err.code, message: err.message }
   	})
   }
 }

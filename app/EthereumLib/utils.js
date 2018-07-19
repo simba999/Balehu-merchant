@@ -56,7 +56,7 @@ export  async  function createWallet(password,token){
      let amount1=2000*1000000
      var hash2=await SendCoinTo(address,amount1,token,Balehu);
       console.log(hash+ "seeded")
-     consoel.log(hash2+ "coins Sent")
+     console.log(hash2+ "coins Sent")
      return address;
    }catch (error) {
        alert(error+ "error");

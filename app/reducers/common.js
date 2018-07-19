@@ -73,7 +73,7 @@ export const commonReducer = createReducer(initialstate, {
       promotions = Object.assign([], state.promotions[action.userId])
     }
     
-    promotions.map((promo) => {
+    promotions = promotions.map((promo) => {
       if (action.promotionID === promo.id) {
         const returnVal = Object.assign({}, promo, action.data);
         return returnVal;
@@ -82,8 +82,11 @@ export const commonReducer = createReducer(initialstate, {
       }
     })
 
+    let updatedPromotions = Object.assign({}, state.promotions)
+    updatedPromotions[action.userId] = promotions;
+
     return Object.assign({}, state, {
-      promotions:promotions
+      promotions:updatedPromotions
     })
   },
   [types.SAVE_BUSINESS](state, action){
