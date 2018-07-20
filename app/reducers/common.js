@@ -11,7 +11,8 @@ var initialstate = {
   promotion: {},
   business: {},
   promotions: {},
-  market: []
+  market: [],
+  analytics: {}
 }
 
 export const commonReducer = createReducer(initialstate, {
@@ -103,5 +104,15 @@ export const commonReducer = createReducer(initialstate, {
       market:action.data
     })
   },
+  [types.GET_ANALYTICS_ACTION](state, action){
+    let analytics = Object.assign({}, state.analytics);
 
+    if (action.userId) {
+      analytics[action.userId] = action.data;
+    }
+
+    return Object.assign({}, state, {
+      analytics:analytics
+    })
+  }
 })

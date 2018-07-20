@@ -62,7 +62,7 @@ class CoinTabScreen extends React.Component {
           <LabelText primary text>Public Address</LabelText>
           <QrCodeContainer>
             <QRCode
-             value={this.state.privateKey+';;'+this.state.address}
+             value={this.state.privateKey+this.state.address}
              size={200}
             />
           </QrCodeContainer>

@@ -8,8 +8,9 @@ export const Constants = {
   
 }
 
-export const BASE_URL = 'https://api.balehu.com/'
-export const CREATE_PROMOTION = 'v1/user-auth/user-promotion-insert'
+export const BASE_URL = 'https://api.balehu.com/';
+export const CREATE_PROMOTION = 'v1/user-auth/user-promotion-insert';
+export const ANALYTICS_URL = 'v1/user-auth/analytics-promotion-request';
 
 /* Actions */
 export const DEMO = 'DEMO';
@@ -26,3 +27,5 @@ export const SAVE_BUSINESS = 'SAVE_BUSINESS';
 export const GET_MARKET = 'GET_MARKET';
 export const UPDATE_PROMOTION_ACTION = 'UPDATE_PROMOTION_ACTION';
 export const UPDATE_PROMOTION_STATUS_ACTION = 'UPDATE_PROMOTION_STATUS_ACTION';
+export const GET_ANALYTICS_ACTION = 'GET_ANALYTICS_ACTION';
+
