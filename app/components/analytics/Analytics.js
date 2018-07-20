@@ -64,6 +64,30 @@ https://stackblitz.com/edit/victory-chart-demo
         reached = this.props.analytics[this.props.userinfo['user-id']].reached;
         redeemed = this.props.analytics[this.props.userinfo['user-id']].redeemed;
         engaged = this.props.analytics[this.props.userinfo['user-id']].engaged;
+      } else {
+        reached = [
+          { y: 20, x: 2},
+          { y: 40, x: 8},
+          { y: 60, x: 5},
+          { y: 50, x: 10},
+          { y: 25, x: 6}
+        ];
+
+        redeemed = [
+          { y: 10, x: 2},
+          { y: 25, x: 10},
+          { y: 20, x: 3},
+          { y: 30, x: 5},
+          { y: 35, x: 7}
+        ];
+
+        engaged = [
+          { y: 80, x: 2},
+          { y: 47, x: 10},
+          { y: 65, x: 5},
+          { y: 55, x: 4},
+          { y: 80, x: 6}
+        ]
       }
 
       return (

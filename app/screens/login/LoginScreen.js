@@ -39,8 +39,8 @@ class LoginScreen extends React.Component {
     super()
 
     this.state = {
-      username: 'simballl@mail.com',
-      password: 'Kingsimba126!@',
+      username: '',
+      password: '',
       errMsg: ''
     }
   }

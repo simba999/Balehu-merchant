@@ -33,11 +33,11 @@ class SignupScreen extends React.Component {
     super();
 
     this.state = {
-      first_name: 'king12',
-      second_name: 'simba',
-      email: 'simba126@mail.com',
-      password: 'Kingsimba126!@',
-      confirm_password: 'Kingsimba126!@'
+      first_name: '',
+      second_name: '',
+      email: '',
+      password: '',
+      confirm_password: ''
     }
 
     this._signup = this._signup.bind(this);
