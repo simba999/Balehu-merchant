@@ -1,16 +1,3 @@
 rootProject.name = 'balehuMerchant'
-include ':react-native-secure-storage'
-project(':react-native-secure-storage').projectDir = new File(rootProject.projectDir, '../node_modules/react-native-secure-storage/android')
-include ':react-native-secure-key-store'
-project(':react-native-secure-key-store').projectDir = new File(rootProject.projectDir, '../node_modules/react-native-secure-key-store/android')
-include ':react-native-image-crop-picker'
-project(':react-native-image-crop-picker').projectDir = new File(rootProject.projectDir, '../node_modules/react-native-image-crop-picker/android')
-include ':react-native-webview-bridge'
-project(':react-native-webview-bridge').projectDir = new File(rootProject.projectDir, '../node_modules/react-native-webview-bridge/android')
-include ':react-native-camera'
-project(':react-native-camera').projectDir = new File(rootProject.projectDir, '../node_modules/react-native-camera/android')
-include ':react-native-maps'
-project(':react-native-maps').projectDir = new File(rootProject.projectDir, '../node_modules/react-native-maps/lib/android')
-include ':react-native-svg'
-project(':react-native-svg').projectDir = new File(rootProject.projectDir, '../node_modules/react-native-svg/android')
+
 include ':app'
